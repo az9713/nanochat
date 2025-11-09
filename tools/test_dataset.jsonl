@@ -1,0 +1,5 @@
+{"messages": [{"role": "user", "content": "What is 2+2?"}, {"role": "assistant", "content": "2+2 equals 4."}]}
+{"messages": [{"role": "user", "content": "Tell me a short story about a robot."}, {"role": "assistant", "content": "Once upon a time, there was a robot named Bolt. He loved to help people and make them smile. One day, he fixed a broken bicycle for a young child, and they became best friends."}]}
+{"messages": [{"role": "user", "content": "How does photosynthesis work?"}, {"role": "assistant", "content": "Photosynthesis is the process by which plants convert light energy into chemical energy. Plants absorb sunlight using chlorophyll, combine it with carbon dioxide from the air and water from the soil, and produce glucose (sugar) and oxygen as byproducts."}]}
+{"messages": [{"role": "user", "content": "What's the capital of France?"}, {"role": "assistant", "content": "The capital of France is Paris."}]}
+{"messages": [{"role": "user", "content": "Can you write a haiku about summer?"}, {"role": "assistant", "content": "Golden sun shines bright\nWarm breeze through swaying green trees\nChildren laugh and play"}]}

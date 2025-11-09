@@ -2,15 +2,16 @@
 
 This guide provides detailed implementation plans for 10 beginner-friendly features that can be added to nanochat. Each feature includes detailed explanations, code snippets, and step-by-step implementation instructions.
 
-**Implementation Status:** 2/10 features completed ✅
+**Implementation Status:** 3/10 features completed ✅
 - Feature 1: Interactive Tokenizer Playground ✅ **IMPLEMENTED**
+- Feature 4: Dataset Inspector ✅ **IMPLEMENTED**
 - Feature 5: Model Size & Cost Calculator ✅ **IMPLEMENTED**
 
 ## Table of Contents
 1. [Feature 1: Interactive Tokenizer Playground](#feature-1-interactive-tokenizer-playground) ✅ **IMPLEMENTED**
 2. [Feature 2: Training Progress Dashboard](#feature-2-training-progress-dashboard)
 3. [Feature 3: Checkpoint Browser & Comparator](#feature-3-checkpoint-browser--comparator)
-4. [Feature 4: Dataset Inspector](#feature-4-dataset-inspector)
+4. [Feature 4: Dataset Inspector](#feature-4-dataset-inspector) ✅ **IMPLEMENTED**
 5. [Feature 5: Model Size & Cost Calculator](#feature-5-model-size--cost-calculator) ✅ **IMPLEMENTED**
 6. [Feature 6: Generation Parameter Explorer](#feature-6-generation-parameter-explorer)
 7. [Feature 7: Training Resume Helper](#feature-7-training-resume-helper)
@@ -1131,6 +1132,8 @@ Total disk usage: 8.27 GB
 ---
 
 ## Feature 4: Dataset Inspector
+
+✅ **STATUS: IMPLEMENTED** - Available in `tools/dataset_inspector.py`
 
 ### Why This Feature is Useful
 

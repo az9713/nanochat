@@ -90,6 +90,13 @@ The `tools/` directory contains ready-to-use utilities for learning and experime
   - Compare tokenization efficiency of different texts
   - Perfect for understanding how "Hello world" becomes `[1000, 1001, 33]`
 
+- **dataset_inspector.py** - Analyze and validate training datasets
+  - Preview random samples from your dataset
+  - Validate format and find errors before training
+  - Analyze token/character length distributions
+  - Export samples for manual review
+  - Perfect for ensuring data quality before expensive training runs
+
 - **model_calculator.py** - Calculate model size, memory, and training costs
   - Estimate parameters for any model configuration
   - Predict GPU memory requirements
@@ -158,6 +165,7 @@ nanochat/
 ├── docs/                  # Complete documentation (you are here!)
 └── tools/                 # Learning and utility tools (see doc 9)
     ├── tokenizer_playground.py  # Interactive tokenizer visualization
+    ├── dataset_inspector.py     # Dataset analysis and validation
     └── model_calculator.py      # Model size & cost calculator
 ```
 
