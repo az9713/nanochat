@@ -2,17 +2,25 @@
 """
 Test script for Training Resume Helper
 
-Creates a mock checkpoint and tests all functionality.
+Creates mock checkpoints in nanochat format and tests all functionality.
 """
 
 import os
 import sys
+import json
 import tempfile
 import shutil
 
 
-def create_mock_checkpoint(checkpoint_dir: str):
-    """Create a mock checkpoint for testing."""
+def create_mock_checkpoint(checkpoint_dir: str, step: int = 2500):
+    """
+    Create a mock checkpoint for testing in nanochat format.
+
+    Nanochat saves checkpoints as:
+    - model_<step>.pt (model weights)
+    - meta_<step>.json (metadata)
+    - optim_<step>.pt (optimizer state, optional)
+    """
     try:
         import torch
     except ImportError:
@@ -30,9 +38,9 @@ def create_mock_checkpoint(checkpoint_dir: str):
         'layer2.bias': torch.randn(5),
     }
 
-    # Create metadata
+    # Create metadata as a dict (will be saved to JSON)
     metadata = {
-        'step': 2500,
+        'step': step,
         'val_bpb': 1.234,
         'model_config': {
             'n_layer': 6,
@@ -48,16 +56,16 @@ def create_mock_checkpoint(checkpoint_dir: str):
         'max_seq_len': 1024,
     }
 
-    # Save checkpoint
-    checkpoint = {
-        'model': model_state,
-        'metadata': metadata,
-    }
+    # Save model file (model_<step>.pt)
+    model_path = os.path.join(checkpoint_dir, f'model_{step:06d}.pt')
+    torch.save(model_state, model_path)
 
-    checkpoint_path = os.path.join(checkpoint_dir, 'checkpoint.pt')
-    torch.save(checkpoint, checkpoint_path)
+    # Save metadata file (meta_<step>.json)
+    meta_path = os.path.join(checkpoint_dir, f'meta_{step:06d}.json')
+    with open(meta_path, 'w', encoding='utf-8') as f:
+        json.dump(metadata, f, indent=2)
 
-    return checkpoint_path
+    return step, model_path, meta_path
 
 
 def test_training_resume_helper():
@@ -71,14 +79,17 @@ def test_training_resume_helper():
     print(f"📁 Creating test checkpoint in: {test_dir}\n")
 
     try:
-        # Create mock checkpoint
-        checkpoint_path = create_mock_checkpoint(test_dir)
+        # Create mock checkpoint in nanochat format
+        checkpoint_result = create_mock_checkpoint(test_dir)
 
-        if checkpoint_path is None:
+        if checkpoint_result is None:
             print("⚠️  Cannot test without PyTorch - tool requires torch for checkpoint loading")
             return
 
-        print(f"✓ Created mock checkpoint: {checkpoint_path}\n")
+        step, model_path, meta_path = checkpoint_result
+        print(f"✓ Created mock checkpoint at step {step}:")
+        print(f"  Model: {os.path.basename(model_path)}")
+        print(f"  Metadata: {os.path.basename(meta_path)}\n")
 
         # Import the helper
         sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -91,7 +102,10 @@ def test_training_resume_helper():
         print("-" * 80)
         found = helper.find_latest_checkpoint()
         if found:
-            print(f"✓ Found checkpoint: {found}")
+            found_step, found_model, found_meta = found
+            print(f"✓ Found checkpoint at step {found_step}")
+            print(f"  Model: {os.path.basename(found_model)}")
+            print(f"  Metadata: {os.path.basename(found_meta)}")
         else:
             print("✗ Failed to find checkpoint")
         print()
@@ -99,14 +113,14 @@ def test_training_resume_helper():
         # Test 2: Load checkpoint info
         print("TEST 2: Load checkpoint information")
         print("-" * 80)
-        info = helper.load_checkpoint_info(checkpoint_path)
+        info = helper.load_checkpoint_info(meta_path)
         print(f"✓ Loaded info: step={info['step']}, val_bpb={info['val_bpb']}")
         print()
 
         # Test 3: Verify checkpoint
         print("TEST 3: Verify checkpoint integrity")
         print("-" * 80)
-        is_valid = helper.verify_checkpoint(checkpoint_path)
+        is_valid = helper.verify_checkpoint(step, model_path, meta_path)
         print()
 
         # Test 4: Calculate resume parameters
@@ -122,13 +136,14 @@ def test_training_resume_helper():
         # Test 5: Print full report
         print("TEST 5: Generate full resume report")
         print("-" * 80)
-        helper.print_resume_report(checkpoint_path, target_steps)
+        helper.print_resume_report(step, model_path, meta_path, target_steps)
 
-        # Test 6: Generate command
-        print("TEST 6: Generate resume command")
+        # Test 6: Generate resume instructions
+        print("TEST 6: Generate resume instructions")
         print("-" * 80)
-        cmd = helper.generate_resume_command(checkpoint_path)
-        print(f"✓ Generated command:\n{cmd}")
+        instructions = helper.generate_resume_instructions(step, meta_path)
+        print(f"✓ Generated instructions (truncated):")
+        print(instructions[:200] + "...")
         print()
 
         print("="*80)

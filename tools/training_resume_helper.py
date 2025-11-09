@@ -15,8 +15,10 @@ Usage:
 import os
 import argparse
 import sys
+import json
+import glob
 from pathlib import Path
-from typing import Optional, Dict
+from typing import Optional, Dict, Tuple
 
 
 class TrainingResumeHelper:
@@ -25,41 +27,59 @@ class TrainingResumeHelper:
     def __init__(self, checkpoint_dir: str):
         self.checkpoint_dir = checkpoint_dir
 
-    def find_latest_checkpoint(self) -> Optional[str]:
+    def find_latest_checkpoint(self) -> Optional[Tuple[int, str, str]]:
         """
         Find the most recent checkpoint in the directory.
 
+        Nanochat saves checkpoints as:
+        - model_<step>.pt (model weights)
+        - meta_<step>.json (metadata)
+        - optim_<step>.pt (optimizer state, optional)
+
         Returns:
-            Path to latest checkpoint, or None if not found
+            Tuple of (step, model_path, meta_path), or None if not found
         """
-        checkpoint_file = os.path.join(self.checkpoint_dir, "checkpoint.pt")
+        # Look for model_*.pt files
+        model_files = glob.glob(os.path.join(self.checkpoint_dir, "model_*.pt"))
 
-        if os.path.exists(checkpoint_file):
-            return checkpoint_file
+        if not model_files:
+            return None
 
-        return None
+        # Extract step numbers and find the latest
+        checkpoints = []
+        for model_path in model_files:
+            basename = os.path.basename(model_path)
+            try:
+                # Extract step from model_<step>.pt
+                step_str = basename.split('_')[1].split('.')[0]
+                step = int(step_str)
 
-    def load_checkpoint_info(self, checkpoint_path: str) -> Dict:
+                # Check if corresponding meta file exists
+                meta_path = os.path.join(self.checkpoint_dir, f"meta_{step:06d}.json")
+                if os.path.exists(meta_path):
+                    checkpoints.append((step, model_path, meta_path))
+            except (IndexError, ValueError):
+                continue
+
+        if not checkpoints:
+            return None
+
+        # Return the checkpoint with the highest step number
+        checkpoints.sort(key=lambda x: x[0], reverse=True)
+        return checkpoints[0]
+
+    def load_checkpoint_info(self, meta_path: str) -> Dict:
         """
-        Load checkpoint metadata without loading full model.
+        Load checkpoint metadata from JSON file.
 
         Args:
-            checkpoint_path: Path to checkpoint
+            meta_path: Path to meta_<step>.json file
 
         Returns:
             Dictionary with checkpoint information
         """
-        # Import torch only when needed
-        try:
-            import torch
-        except ImportError:
-            print("❌ Error: PyTorch is required for checkpoint loading.", file=sys.stderr)
-            print("Install with: pip install torch", file=sys.stderr)
-            sys.exit(1)
-
-        checkpoint = torch.load(checkpoint_path, map_location='cpu')
-
-        metadata = checkpoint.get('metadata', {})
+        with open(meta_path, 'r', encoding='utf-8') as f:
+            metadata = json.load(f)
 
         return {
             'step': metadata.get('step', 0),
@@ -70,12 +90,14 @@ class TrainingResumeHelper:
             'max_seq_len': metadata.get('max_seq_len', None),
         }
 
-    def verify_checkpoint(self, checkpoint_path: str) -> bool:
+    def verify_checkpoint(self, step: int, model_path: str, meta_path: str) -> bool:
         """
         Verify checkpoint integrity.
 
         Args:
-            checkpoint_path: Path to checkpoint
+            step: Checkpoint step number
+            model_path: Path to model_<step>.pt
+            meta_path: Path to meta_<step>.json
 
         Returns:
             True if checkpoint is valid
@@ -87,26 +109,40 @@ class TrainingResumeHelper:
             return False
 
         try:
-            checkpoint = torch.load(checkpoint_path, map_location='cpu')
+            # Check model file exists and can be loaded
+            if not os.path.exists(model_path):
+                print(f"✗ Model file not found: {model_path}")
+                return False
 
-            # Check required fields
-            required_fields = ['model', 'metadata']
-            for field in required_fields:
-                if field not in checkpoint:
-                    print(f"✗ Missing required field: {field}")
-                    return False
-
-            # Check model state dict
-            model_state = checkpoint['model']
+            model_state = torch.load(model_path, map_location='cpu')
             if not isinstance(model_state, dict) or len(model_state) == 0:
                 print("✗ Invalid or empty model state")
                 return False
 
-            print("✓ Checkpoint is valid")
+            # Check metadata file exists and can be loaded
+            if not os.path.exists(meta_path):
+                print(f"✗ Metadata file not found: {meta_path}")
+                return False
+
+            with open(meta_path, 'r', encoding='utf-8') as f:
+                metadata = json.load(f)
+
+            if not isinstance(metadata, dict):
+                print("✗ Invalid metadata format")
+                return False
+
+            # Check that step matches
+            if metadata.get('step') != step:
+                print(f"✗ Step mismatch: file says {step}, metadata says {metadata.get('step')}")
+                return False
+
+            print(f"✓ Checkpoint at step {step} is valid")
+            print(f"  Model file: {os.path.basename(model_path)}")
+            print(f"  Metadata file: {os.path.basename(meta_path)}")
             return True
 
         except Exception as e:
-            print(f"✗ Error loading checkpoint: {e}")
+            print(f"✗ Error verifying checkpoint: {e}")
             return False
 
     def calculate_resume_params(self, checkpoint_info: Dict, target_steps: int) -> Dict:
@@ -138,12 +174,14 @@ class TrainingResumeHelper:
             'target_steps': target_steps
         }
 
-    def print_resume_report(self, checkpoint_path: str, target_steps: int = None):
+    def print_resume_report(self, step: int, model_path: str, meta_path: str, target_steps: int = None):
         """
         Print a report about resuming from this checkpoint.
 
         Args:
-            checkpoint_path: Path to checkpoint
+            step: Checkpoint step number
+            model_path: Path to model_<step>.pt
+            meta_path: Path to meta_<step>.json
             target_steps: Target total steps (optional)
         """
         print(f"\n{'='*80}")
@@ -151,10 +189,12 @@ class TrainingResumeHelper:
         print(f"{'='*80}\n")
 
         # Load checkpoint info
-        info = self.load_checkpoint_info(checkpoint_path)
+        info = self.load_checkpoint_info(meta_path)
 
-        print(f"Checkpoint: {checkpoint_path}")
-        print(f"Last saved step: {info['step']:,}")
+        print(f"Checkpoint directory: {self.checkpoint_dir}")
+        print(f"Model file: {os.path.basename(model_path)}")
+        print(f"Metadata file: {os.path.basename(meta_path)}")
+        print(f"\nLast saved step: {info['step']:,}")
         if info['val_bpb']:
             print(f"Validation BPB: {info['val_bpb']:.4f}")
         else:
@@ -197,30 +237,61 @@ class TrainingResumeHelper:
 
         print(f"\n{'='*80}\n")
 
-    def generate_resume_command(self, checkpoint_path: str, script: str = "base_train.py") -> str:
+    def generate_resume_instructions(self, step: int, meta_path: str, script: str = "base_train.py") -> str:
         """
-        Generate command to resume training.
+        Generate instructions for manually resuming training.
+
+        Note: Nanochat training scripts don't have built-in resume functionality.
+        You need to manually load the checkpoint in your training script.
 
         Args:
-            checkpoint_path: Path to checkpoint
+            step: Checkpoint step number
+            meta_path: Path to meta_<step>.json
             script: Training script name
 
         Returns:
-            Command string to resume training
+            Instructions string for resuming training
         """
-        info = self.load_checkpoint_info(checkpoint_path)
+        info = self.load_checkpoint_info(meta_path)
 
-        # Build command
-        cmd_parts = [
-            f"python -m scripts.{script.replace('.py', '')}",
-            f"--resume_from={checkpoint_path}",
-        ]
+        checkpoint_dir = self.checkpoint_dir
 
-        # Add key parameters from checkpoint
-        if info['device_batch_size']:
-            cmd_parts.append(f"--device_batch_size={info['device_batch_size']}")
+        instructions = f"""
+To resume training from step {step:,}:
 
-        return " \\\n    ".join(cmd_parts)
+1. Load the checkpoint in your training script using checkpoint_manager:
+
+   from nanochat.checkpoint_manager import load_checkpoint
+
+   model_data, optim_data, meta_data = load_checkpoint(
+       checkpoint_dir="{checkpoint_dir}",
+       step={step},
+       device=device,
+       load_optimizer=True
+   )
+
+   # Load into your model
+   model.load_state_dict(model_data)
+
+   # Load optimizer state if continuing training
+   if optim_data:
+       optimizer.load_state_dict(optim_data)
+
+2. Set the starting step to continue from:
+
+   start_step = {step} + 1
+
+3. Adjust your training loop:
+
+   for step in range(start_step, num_iterations + 1):
+       # ... training code ...
+
+4. Or use the checkpoint as initialization for fine-tuning with different settings
+
+NOTE: Nanochat training scripts ({script}) currently don't have automatic
+resume via CLI arguments. Manual code modifications are required.
+"""
+        return instructions
 
 
 def main():
@@ -254,28 +325,34 @@ Examples:
     helper = TrainingResumeHelper(args.checkpoint_dir)
 
     # Find latest checkpoint
-    checkpoint_path = helper.find_latest_checkpoint()
+    checkpoint_result = helper.find_latest_checkpoint()
 
-    if not checkpoint_path:
+    if not checkpoint_result:
         print(f"❌ No checkpoint found in {args.checkpoint_dir}")
-        print(f"\nLooking for: {os.path.join(args.checkpoint_dir, 'checkpoint.pt')}")
+        print(f"\nLooking for files matching: model_*.pt and meta_*.json")
+        print(f"\nNanochat saves checkpoints as:")
+        print(f"  - model_<step>.pt  (model weights)")
+        print(f"  - meta_<step>.json (metadata)")
+        print(f"  - optim_<step>.pt  (optimizer state, optional)")
         sys.exit(1)
 
+    step, model_path, meta_path = checkpoint_result
+
     if args.verify:
-        if helper.verify_checkpoint(checkpoint_path):
+        if helper.verify_checkpoint(step, model_path, meta_path):
             print("\n✅ Checkpoint is ready to use!")
         else:
             print("\n❌ Checkpoint has issues - may not resume correctly")
             sys.exit(1)
     elif args.command:
-        cmd = helper.generate_resume_command(checkpoint_path, args.script)
+        instructions = helper.generate_resume_instructions(step, meta_path, args.script)
         print("\n" + "="*80)
-        print("RESUME COMMAND")
+        print("RESUME INSTRUCTIONS")
+        print("="*80)
+        print(instructions)
         print("="*80 + "\n")
-        print(cmd)
-        print("\n" + "="*80 + "\n")
     else:
-        helper.print_resume_report(checkpoint_path, args.target_steps)
+        helper.print_resume_report(step, model_path, meta_path, args.target_steps)
 
 
 if __name__ == "__main__":

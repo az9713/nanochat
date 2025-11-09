@@ -315,21 +315,23 @@ MODEL SIZE & COST CALCULATOR
 - Calculate FLOPs for computational cost estimation
 
 ##### 7. Training Resume Helper (`training_resume_helper.py`)
-Analyze checkpoints and automatically resume interrupted training runs.
+Analyze checkpoints and provide guidance for resuming interrupted training runs.
 
 **What it does:**
-- Find and verify checkpoint integrity
+- Find latest checkpoint in nanochat's format (model_*.pt + meta_*.json)
+- Verify checkpoint integrity and file structure
 - Display checkpoint metadata (step, loss, model config)
 - Calculate training progress and remaining steps
-- Generate resume commands with correct parameters
+- Generate manual resume instructions with code examples
 - Detect warmdown phase for learning rate adjustment
 
 **Why it's useful:**
 - Never lose training progress from crashes
-- Automatically resume from the correct checkpoint
+- Identify the correct checkpoint to resume from
 - Calculate remaining training time accurately
-- Understand checkpoint structure and metadata
-- Learn about training state management
+- Understand nanochat's checkpoint file structure
+- Learn about training state management (model, optimizer, metadata)
+- Get code examples for manual checkpoint loading
 - Debug checkpoint loading issues
 
 **Usage:**
@@ -343,7 +345,7 @@ python tools/training_resume_helper.py out/checkpoint_dir --target-steps 5400
 # Verify checkpoint integrity
 python tools/training_resume_helper.py out/checkpoint_dir --verify
 
-# Generate resume command
+# Generate resume instructions (manual code examples)
 python tools/training_resume_helper.py out/checkpoint_dir --command
 ```
 
@@ -353,7 +355,10 @@ python tools/training_resume_helper.py out/checkpoint_dir --command
 TRAINING RESUME REPORT
 ================================================================================
 
-Checkpoint: out/checkpoint_dir/checkpoint.pt
+Checkpoint directory: out/base_checkpoints/d20
+Model file: model_002500.pt
+Metadata file: meta_002500.json
+
 Last saved step: 2,500
 Validation BPB: 1.2340
 
@@ -381,14 +386,17 @@ Resume Parameters:
 ================================================================================
 ```
 
+With `--command`, generates manual resume instructions showing how to use `load_checkpoint()` from `checkpoint_manager.py` to manually load and resume training.
+
 **Dependencies:** PyTorch (for checkpoint loading)
 
 **Learning outcomes:**
-- Understand checkpoint save/load mechanics
-- Learn about training state management (model, optimizer, metadata)
-- Practice error handling and validation
-- See how to calculate training progress
-- Understand warmdown phase in training schedules
+- Understand nanochat's checkpoint file format (model_*.pt + meta_*.json)
+- Learn about training state management (model weights, optimizer state, metadata)
+- Practice working with PyTorch state_dicts and JSON metadata
+- See how to calculate training progress and detect training phases
+- Understand manual checkpoint loading using checkpoint_manager.py
+- Learn about warmdown phase in training schedules
 
 #### 🔜 Planned Features (See `docs/09_feature_implementation_guide.md`)
 
