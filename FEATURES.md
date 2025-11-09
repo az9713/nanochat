@@ -314,12 +314,87 @@ MODEL SIZE & COST CALCULATOR
 - See how batch size and sequence length affect training
 - Calculate FLOPs for computational cost estimation
 
+##### 7. Training Resume Helper (`training_resume_helper.py`)
+Analyze checkpoints and automatically resume interrupted training runs.
+
+**What it does:**
+- Find and verify checkpoint integrity
+- Display checkpoint metadata (step, loss, model config)
+- Calculate training progress and remaining steps
+- Generate resume commands with correct parameters
+- Detect warmdown phase for learning rate adjustment
+
+**Why it's useful:**
+- Never lose training progress from crashes
+- Automatically resume from the correct checkpoint
+- Calculate remaining training time accurately
+- Understand checkpoint structure and metadata
+- Learn about training state management
+- Debug checkpoint loading issues
+
+**Usage:**
+```bash
+# Show checkpoint information
+python tools/training_resume_helper.py out/checkpoint_dir
+
+# Calculate progress toward target steps
+python tools/training_resume_helper.py out/checkpoint_dir --target-steps 5400
+
+# Verify checkpoint integrity
+python tools/training_resume_helper.py out/checkpoint_dir --verify
+
+# Generate resume command
+python tools/training_resume_helper.py out/checkpoint_dir --command
+```
+
+**Example output:**
+```
+================================================================================
+TRAINING RESUME REPORT
+================================================================================
+
+Checkpoint: out/checkpoint_dir/checkpoint.pt
+Last saved step: 2,500
+Validation BPB: 1.2340
+
+Model Configuration:
+  Layers: 6
+  Hidden dim: 384
+  Sequence length: 1024
+
+Training Configuration:
+  device_batch_size: 16
+  total_batch_size: 64
+  learning_rate: 0.001
+
+Resume Parameters:
+  Current step: 2,500
+  Target steps: 5,000
+  Remaining: 2,500
+  Progress: 50.0%
+  In warmdown: No
+
+💡 Learning Insights:
+  • Still in main training phase
+  • Approximately 50% of training remaining
+
+================================================================================
+```
+
+**Dependencies:** PyTorch (for checkpoint loading)
+
+**Learning outcomes:**
+- Understand checkpoint save/load mechanics
+- Learn about training state management (model, optimizer, metadata)
+- Practice error handling and validation
+- See how to calculate training progress
+- Understand warmdown phase in training schedules
+
 #### 🔜 Planned Features (See `docs/09_feature_implementation_guide.md`)
 
 2. **Training Progress Dashboard** - Real-time visualization of training metrics
 3. **Checkpoint Browser & Comparator** - Explore saved models and compare performance
 6. **Generation Parameter Explorer** - Experiment with temperature, top-k, top-p
-7. **Training Resume Helper** - Easily resume training from checkpoints
 8. **Simple Attention Visualizer** - See what the model attends to
 9. **Learning Rate Finder** - Find optimal learning rate automatically
 10. **Conversation Template Builder** - Create and test custom chat templates
@@ -370,10 +445,11 @@ The original nanochat is minimalist and production-focused. This fork adds a com
 ## Status
 
 - ✅ Documentation: Complete (9 guides covering all aspects)
-- ✅ Tools: 3/10 features implemented
+- ✅ Tools: 4/10 features implemented
   - Feature 1: Interactive Tokenizer Playground ✅
   - Feature 4: Dataset Inspector ✅
   - Feature 5: Model Size & Cost Calculator ✅
+  - Feature 7: Training Resume Helper ✅
 - 🔄 Actively adding more learning features
 
 ## Acknowledgments

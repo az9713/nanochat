@@ -103,6 +103,12 @@ The `tools/` directory contains ready-to-use utilities for learning and experime
   - Calculate training time and FLOPs
   - Perfect for understanding model scaling
 
+- **training_resume_helper.py** - Analyze checkpoints and resume interrupted training
+  - Find and verify checkpoint integrity
+  - Calculate training progress and remaining steps
+  - Generate resume commands with correct parameters
+  - Perfect for recovering from training crashes
+
 More tools coming soon! See the [Feature Implementation Guide](09_feature_implementation_guide.md) for features you can build.
 
 ## 🎯 How to Use This Documentation
@@ -166,7 +172,8 @@ nanochat/
 └── tools/                 # Learning and utility tools (see doc 9)
     ├── tokenizer_playground.py  # Interactive tokenizer visualization
     ├── dataset_inspector.py     # Dataset analysis and validation
-    └── model_calculator.py      # Model size & cost calculator
+    ├── model_calculator.py      # Model size & cost calculator
+    └── training_resume_helper.py  # Training checkpoint analysis and resume
 ```
 
 ## 📖 Glossary

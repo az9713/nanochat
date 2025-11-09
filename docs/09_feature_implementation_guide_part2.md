@@ -355,6 +355,8 @@ python tools/generation_explorer.py --checkpoint out/chat_checkpoints/d20_sft \
 
 ## Feature 7: Training Resume Helper
 
+✅ **STATUS: IMPLEMENTED** - Available in `tools/training_resume_helper.py`
+
 ### Why This Feature is Useful
 
 **Problem it solves:**
@@ -677,7 +679,7 @@ python tools/training_resume_helper.py out/base_checkpoints/d20 --command
 | 4 | Dataset Inspector | ✅ **DONE** | ⭐ | 2-4 hours | Data validation, statistics |
 | 5 | Model Calculator | ✅ **DONE** | ⭐ | 1-2 hours | Parameter counting, estimation |
 | 6 | Generation Explorer | 📝 Planned | ⭐⭐ | 3-5 hours | Sampling, probabilities |
-| 7 | Training Resume | 📝 Planned | ⭐ | 2-3 hours | Checkpointing, state management |
+| 7 | Training Resume | ✅ **DONE** | ⭐ | 2-3 hours | Checkpointing, state management |
 | 8 | Attention Visualizer | 📝 Planned | ⭐⭐ | 4-6 hours | Attention mechanics, visualization |
 | 9 | LR Finder | 📝 Planned | ⭐⭐ | 3-4 hours | Optimization, hyperparameter tuning |
 | 10 | Conversation Builder | 📝 Planned | ⭐⭐ | 3-5 hours | Data creation, UX design |
@@ -689,17 +691,17 @@ For beginners, implement in this order:
 1. ✅ **#5 (Model Calculator)** - Already implemented! Use it to plan your experiments
 2. ✅ **#1 (Tokenizer Playground)** - Already implemented! Great for understanding LLMs
 3. ✅ **#4 (Dataset Inspector)** - Already implemented! Essential for data quality
-4. **#7 (Training Resume)** - Saves time when training crashes (good next choice!)
-5. **#3 (Checkpoint Browser)** - Useful day-to-day for managing models
+4. ✅ **#7 (Training Resume)** - Already implemented! Never lose training progress
+5. **#3 (Checkpoint Browser)** - Useful day-to-day for managing models (good next choice!)
 6. **#2 (Training Dashboard)** - Makes training more visible
 7. **#6 (Generation Explorer)** - Fun and educational
 8. **Rest as needed** - Based on your interests
 
 ### Total Implementation Time
 
-- **All 10 features**: 26-41 hours (✅ 3 done, 7 remaining = 19-31 hours)
-- **Top 5 essentials (#1, #2, #3, #4, #5)**: 11-18 hours (✅ 3 done, 2 remaining = 6-10 hours)
-- **Quick wins (#1, #3, #4, #5)**: 7-12 hours (✅ All done! 🎉)
+- **All 10 features**: 26-41 hours (✅ 4 done, 6 remaining = 17-29 hours)
+- **Top 5 essentials (#1, #2, #3, #4, #5)**: 11-18 hours (✅ 3 done, 2 remaining = 6-9 hours)
+- **Quick wins (#1, #4, #5, #7)**: 7-12 hours (✅ All done! 🎉)
 
 ---
 
