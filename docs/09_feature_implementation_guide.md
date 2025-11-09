@@ -2,10 +2,11 @@
 
 This guide provides detailed implementation plans for 10 beginner-friendly features that can be added to nanochat. Each feature includes detailed explanations, code snippets, and step-by-step implementation instructions.
 
-**Implementation Status:** 3/10 features completed ✅
+**Implementation Status:** 4/10 features completed ✅
 - Feature 1: Interactive Tokenizer Playground ✅ **IMPLEMENTED**
 - Feature 4: Dataset Inspector ✅ **IMPLEMENTED**
 - Feature 5: Model Size & Cost Calculator ✅ **IMPLEMENTED**
+- Feature 7: Training Resume Helper ✅ **IMPLEMENTED**
 
 ## Table of Contents
 1. [Feature 1: Interactive Tokenizer Playground](#feature-1-interactive-tokenizer-playground) ✅ **IMPLEMENTED**
@@ -14,7 +15,7 @@ This guide provides detailed implementation plans for 10 beginner-friendly featu
 4. [Feature 4: Dataset Inspector](#feature-4-dataset-inspector) ✅ **IMPLEMENTED**
 5. [Feature 5: Model Size & Cost Calculator](#feature-5-model-size--cost-calculator) ✅ **IMPLEMENTED**
 6. [Feature 6: Generation Parameter Explorer](#feature-6-generation-parameter-explorer)
-7. [Feature 7: Training Resume Helper](#feature-7-training-resume-helper)
+7. [Feature 7: Training Resume Helper](#feature-7-training-resume-helper) ✅ **IMPLEMENTED**
 8. [Feature 8: Simple Attention Visualizer](#feature-8-simple-attention-visualizer)
 9. [Feature 9: Learning Rate Finder](#feature-9-learning-rate-finder)
 10. [Feature 10: Conversation Template Builder](#feature-10-conversation-template-builder)
