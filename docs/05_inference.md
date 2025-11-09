@@ -397,6 +397,7 @@ conversation = [
     {"role": "user", "content": "What is 2+2?"},
     {"role": "assistant", "content": "4"}
 ]
+# Note: Can optionally start with {"role": "system", "content": "..."} for system prompts
 
 # User asks follow-up
 conversation.append({"role": "user", "content": "What about 3+3?"})

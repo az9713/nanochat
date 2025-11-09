@@ -289,6 +289,10 @@ conversation = {
     ]
 }
 
+# Note: Conversations can optionally start with a system message:
+# {"role": "system", "content": "You are a helpful assistant."}
+# If present, it's merged with the first user message during rendering.
+
 # Rendered as tokens (simplified):
 [
     65528,  # <|bos|>
@@ -464,6 +468,9 @@ def render_conversation(self, conversation, max_tokens=2048):
         """Helper to add tokens with corresponding mask"""
         ids.extend(token_ids)
         mask.extend([mask_val] * len(token_ids))
+
+    # Handle optional system message (merged with first user message if present)
+    # See actual implementation in nanochat/tokenizer.py for full details
 
     # Start with <|bos|> token
     add_tokens([self.get_bos_token_id()], 0)

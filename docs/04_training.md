@@ -373,6 +373,8 @@ for step in range(num_iterations):
 }
 ```
 
+**Note:** Conversations can optionally start with a `system` message (e.g., `{"role": "system", "content": "You are a helpful assistant."}`). If present, it must be followed by a `user` message, and the system content is merged with the user message during tokenization.
+
 **Converted to tokens with mask:**
 ```
 Tokens: [<|bos|>, <|user_start|>, "What", "is", "2", "+", "2", "?", <|user_end|>,
