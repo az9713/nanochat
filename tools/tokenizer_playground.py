@@ -34,6 +34,20 @@ class TokenizerPlayground:
         self.BOLD = '\033[1m'
         self.DIM = '\033[2m'
 
+        # Build a set of special token IDs for efficient lookup
+        # Handle both string and integer returns from get_special_tokens()
+        self._special_token_ids = set()
+        special_tokens_raw = self.tokenizer.get_special_tokens()
+        for item in special_tokens_raw:
+            if isinstance(item, str):
+                try:
+                    token_id = self.tokenizer.encode_special(item)
+                    self._special_token_ids.add(token_id)
+                except:
+                    pass  # Skip if encoding fails
+            elif isinstance(item, int):
+                self._special_token_ids.add(item)
+
     def tokenize_and_visualize(self, text: str) -> None:
         """
         Tokenize text and display results with colors and details.
@@ -93,7 +107,7 @@ class TokenizerPlayground:
             num_bytes = len(token_bytes)
 
             # Determine token type (simple heuristics)
-            if token_str in self.tokenizer.get_special_tokens():
+            if token_id in self._special_token_ids:
                 token_type = "Special"
             elif token_id < 256:
                 token_type = "Single byte"
@@ -119,13 +133,34 @@ class TokenizerPlayground:
 
     def analyze_special_tokens(self) -> None:
         """Display all special tokens and their IDs."""
-        special_tokens = sorted(list(self.tokenizer.get_special_tokens()))
+        special_tokens_raw = self.tokenizer.get_special_tokens()
+
+        # Handle both string tokens and integer IDs
+        # RustBPETokenizer.get_special_tokens() returns a set of strings
+        # But we handle both cases for robustness
+        token_info = []
+        for item in special_tokens_raw:
+            if isinstance(item, str):
+                # Item is already a token string
+                token_str = item
+                token_id = self.tokenizer.encode_special(item)
+            elif isinstance(item, int):
+                # Item is a token ID - convert to string
+                token_id = item
+                token_str = self.tokenizer.id_to_token(item)
+            else:
+                # Unknown type - skip
+                continue
+            token_info.append((token_str, token_id))
+
+        # Sort by token string for consistent display
+        token_info.sort(key=lambda x: x[0])
 
         print(f"\n{self.BOLD}{'='*70}{self.RESET}")
         print(f"{self.BOLD}SPECIAL TOKENS{self.RESET}")
         print(f"{self.BOLD}{'='*70}{self.RESET}\n")
 
-        print(f"Total special tokens: {len(special_tokens)}\n")
+        print(f"Total special tokens: {len(token_info)}\n")
 
         print(f"{'Token':<25} {'ID':<10} {'Purpose':<30}")
         print("-" * 70)
@@ -143,10 +178,9 @@ class TokenizerPlayground:
             "<|output_end|>": "End of tool output",
         }
 
-        for token in special_tokens:
-            token_id = self.tokenizer.encode_special(token)
-            desc = descriptions.get(token, "")
-            print(f"{token:<25} {token_id:<10} {desc:<30}")
+        for token_str, token_id in token_info:
+            desc = descriptions.get(token_str, "")
+            print(f"{token_str:<25} {token_id:<10} {desc:<30}")
 
         print(f"\n{self.BOLD}Learning Note:{self.RESET}")
         print("  Special tokens are used to structure conversations and tool use.")
