@@ -258,17 +258,32 @@ class DatasetInspector:
                 issues.append((i, f"Only {len(messages)} message(s) - need at least 2"))
                 issue_types['too_short'] += 1
 
-            # Check alternating roles (should start with user)
-            expected_roles = ['user', 'assistant'] * ((len(messages) + 1) // 2)
-            for j, msg in enumerate(messages):
-                actual_role = msg.get('role')
-                expected_role = expected_roles[j] if j < len(expected_roles) else None
+            # Check alternating roles
+            # Handle optional system message at start (as per tokenizer.render_conversation)
+            start_idx = 0
+            if len(messages) > 0 and messages[0].get('role') == 'system':
+                # System message must be followed by user message
+                if len(messages) < 2:
+                    issues.append((i, "System message must be followed by at least a user message"))
+                    issue_types['wrong_role'] += 1
+                elif messages[1].get('role') != 'user':
+                    issues.append((i, f"Message 1: system message must be followed by user, got '{messages[1].get('role')}'"))
+                    issue_types['wrong_role'] += 1
+                start_idx = 1  # Start checking alternation from message 1 (after system)
+
+            # Check alternation starting from start_idx (should be user, assistant, user, assistant...)
+            for j in range(start_idx, len(messages)):
+                actual_role = messages[j].get('role')
+                # Relative position after skipping system message
+                relative_pos = j - start_idx
+                expected_role = 'user' if relative_pos % 2 == 0 else 'assistant'
 
                 if actual_role != expected_role:
                     issues.append((i, f"Message {j}: expected '{expected_role}', got '{actual_role}'"))
                     issue_types['wrong_role'] += 1
 
-                # Check content exists
+            # Check content exists for all messages
+            for j, msg in enumerate(messages):
                 if 'content' not in msg or not msg['content']:
                     issues.append((i, f"Message {j}: empty or missing content"))
                     issue_types['empty_content'] += 1

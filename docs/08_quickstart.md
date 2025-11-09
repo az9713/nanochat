@@ -373,6 +373,7 @@ python -m scripts.base_train \
 {"messages": [{"role": "user", "content": "Hello!"}, {"role": "assistant", "content": "Hi there!"}]}
 {"messages": [{"role": "user", "content": "How are you?"}, {"role": "assistant", "content": "I'm doing well, thank you!"}]}
 ```
+Note: Conversations can optionally start with `{"role": "system", "content": "..."}` for system prompts.
 
 2. Point training script to your data:
 ```python
