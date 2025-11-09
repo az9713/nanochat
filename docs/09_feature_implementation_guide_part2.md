@@ -674,7 +674,7 @@ python tools/training_resume_helper.py out/base_checkpoints/d20 --command
 | 1 | Tokenizer Playground | ✅ **DONE** | ⭐ | 2-3 hours | Tokenization, text processing |
 | 2 | Training Dashboard | 📝 Planned | ⭐⭐ | 4-6 hours | Visualization, real-time monitoring |
 | 3 | Checkpoint Browser | 📝 Planned | ⭐ | 2-3 hours | File management, metadata |
-| 4 | Dataset Inspector | 📝 Planned | ⭐ | 2-4 hours | Data validation, statistics |
+| 4 | Dataset Inspector | ✅ **DONE** | ⭐ | 2-4 hours | Data validation, statistics |
 | 5 | Model Calculator | ✅ **DONE** | ⭐ | 1-2 hours | Parameter counting, estimation |
 | 6 | Generation Explorer | 📝 Planned | ⭐⭐ | 3-5 hours | Sampling, probabilities |
 | 7 | Training Resume | 📝 Planned | ⭐ | 2-3 hours | Checkpointing, state management |
@@ -688,8 +688,8 @@ For beginners, implement in this order:
 
 1. ✅ **#5 (Model Calculator)** - Already implemented! Use it to plan your experiments
 2. ✅ **#1 (Tokenizer Playground)** - Already implemented! Great for understanding LLMs
-3. **#4 (Dataset Inspector)** - Important before training (good next choice!)
-4. **#7 (Training Resume)** - Saves time when training crashes
+3. ✅ **#4 (Dataset Inspector)** - Already implemented! Essential for data quality
+4. **#7 (Training Resume)** - Saves time when training crashes (good next choice!)
 5. **#3 (Checkpoint Browser)** - Useful day-to-day for managing models
 6. **#2 (Training Dashboard)** - Makes training more visible
 7. **#6 (Generation Explorer)** - Fun and educational
@@ -697,9 +697,9 @@ For beginners, implement in this order:
 
 ### Total Implementation Time
 
-- **All 10 features**: 26-41 hours (✅ 2 done, ~8 remaining = 23-36 hours)
-- **Top 5 essentials (#1, #2, #3, #4, #5)**: 11-18 hours (✅ 2 done, 3 remaining = 8-13 hours)
-- **Quick wins (#1, #3, #5)**: 5-8 hours (✅ 2 done, #3 remaining = 2-3 hours)
+- **All 10 features**: 26-41 hours (✅ 3 done, 7 remaining = 19-31 hours)
+- **Top 5 essentials (#1, #2, #3, #4, #5)**: 11-18 hours (✅ 3 done, 2 remaining = 6-10 hours)
+- **Quick wins (#1, #3, #4, #5)**: 7-12 hours (✅ All done! 🎉)
 
 ---
 

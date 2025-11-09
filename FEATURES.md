@@ -118,6 +118,110 @@ Index  Token ID   Text                                Bytes    Type
 - Understand token efficiency and compression
 - Debug tokenization-related issues
 
+##### 4. Dataset Inspector (`dataset_inspector.py`)
+Analyze and validate training datasets before running expensive training jobs.
+
+**What it does:**
+- Show random samples from your dataset
+- Validate JSONL format and conversation structure
+- Analyze token and character length distributions
+- Check for common formatting errors
+- Generate statistics about your data
+- Export samples for manual review
+
+**Why it's useful:**
+- Catch data quality issues before training
+- Understand what patterns your model will learn
+- Ensure conversations are properly formatted
+- Estimate optimal sequence length settings
+- Save hours of debugging failed training runs
+- Balance dataset across different task types
+
+**Usage:**
+```bash
+# Show 5 random samples (default)
+python tools/dataset_inspector.py dataset.jsonl
+
+# Show 10 samples
+python tools/dataset_inspector.py dataset.jsonl --samples 10
+
+# Validate dataset format
+python tools/dataset_inspector.py dataset.jsonl --validate
+
+# Analyze length distributions
+python tools/dataset_inspector.py dataset.jsonl --analyze-lengths
+
+# Export 100 samples for manual review
+python tools/dataset_inspector.py dataset.jsonl --export review.txt --export-count 100
+
+# Do everything at once
+python tools/dataset_inspector.py dataset.jsonl --validate --analyze-lengths --samples 10
+```
+
+**Example output:**
+```
+================================================================================
+FORMAT VALIDATION
+================================================================================
+
+Checked 1,000 conversations
+
+✅ No format issues found! Dataset looks good.
+
+================================================================================
+DATASET STATISTICS
+================================================================================
+
+Total conversations: 1,000
+Total messages:      2,450
+Avg messages/conv:   2.5
+
+Message Role Distribution:
+  user           : 1,000
+  assistant      : 1,450
+
+================================================================================
+LENGTH ANALYSIS
+================================================================================
+
+Total conversations: 1,000
+
+Full Conversation Lengths (in tokens):
+  Min:     45
+  Max:     1,856
+  Mean:    312.4
+  Median:  276
+
+User Message Lengths (characters):
+  Min:     12
+  Max:     524
+  Mean:    98.3
+
+Assistant Message Lengths (characters):
+  Min:     15
+  Max:     1,203
+  Mean:    245.7
+
+Length Distribution (tokens):
+  0-100       :    125 ############
+  100-200     :    345 #######################
+  200-500     :    428 ############################
+  500-1000    :     89 #####
+  1000-2000   :     13 #
+
+💡 Learning Insight:
+  Your conversations are medium length. Balanced for most use cases.
+```
+
+**Dependencies:** None (Python standard library only, optional tokenizer integration)
+
+**Learning outcomes:**
+- Understand training data quality requirements
+- Learn JSONL and conversation format structure
+- Practice data validation and statistics
+- Recognize common data formatting issues
+- Appreciate the importance of data quality
+
 ##### 5. Model Size & Cost Calculator (`model_calculator.py`)
 Calculate parameters, memory, and training costs for any model configuration.
 
@@ -214,7 +318,6 @@ MODEL SIZE & COST CALCULATOR
 
 2. **Training Progress Dashboard** - Real-time visualization of training metrics
 3. **Checkpoint Browser & Comparator** - Explore saved models and compare performance
-4. **Dataset Inspector** - Validate and analyze training data
 6. **Generation Parameter Explorer** - Experiment with temperature, top-k, top-p
 7. **Training Resume Helper** - Easily resume training from checkpoints
 8. **Simple Attention Visualizer** - See what the model attends to
@@ -267,8 +370,9 @@ The original nanochat is minimalist and production-focused. This fork adds a com
 ## Status
 
 - ✅ Documentation: Complete (9 guides covering all aspects)
-- ✅ Tools: 2/10 features implemented
+- ✅ Tools: 3/10 features implemented
   - Feature 1: Interactive Tokenizer Playground ✅
+  - Feature 4: Dataset Inspector ✅
   - Feature 5: Model Size & Cost Calculator ✅
 - 🔄 Actively adding more learning features
 
