@@ -388,7 +388,9 @@ python tools/generation_explorer.py --checkpoint out/chat_checkpoints/d20_sft \
 
 #### New Files to Create
 
-**File 1: `tools/training_resume_helper.py`** (See actual implementation for up-to-date code)
+**⚠️ IMPORTANT:** The code examples below show the ORIGINAL DESIGN and are OUTDATED. They do not match the actual implemented code. For the correct, working implementation, see `tools/training_resume_helper.py`.
+
+**File 1: `tools/training_resume_helper.py`** (OUTDATED EXAMPLE - see actual file for correct code)
 
 ```python
 """
@@ -618,7 +620,9 @@ if __name__ == "__main__":
 
 #### Files to Modify
 
-**File: `scripts/base_train.py`** (Add resume capability)
+**⚠️ IMPORTANT:** The instructions below are OUTDATED. Nanochat training scripts do not need modification. The actual implementation provides manual resume instructions via `checkpoint_manager.load_checkpoint()` instead.
+
+**File: `scripts/base_train.py`** (OUTDATED - These modifications are NOT in the actual implementation)
 
 Add near the top:
 ```python
@@ -661,7 +665,7 @@ python tools/training_resume_helper.py out/base_checkpoints/d20 --target-steps 5
 # Verify checkpoint integrity
 python tools/training_resume_helper.py out/base_checkpoints/d20 --verify
 
-# Generate resume command
+# Generate manual resume instructions
 python tools/training_resume_helper.py out/base_checkpoints/d20 --command
 ```
 
