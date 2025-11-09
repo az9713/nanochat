@@ -123,9 +123,9 @@ Analyze and validate training datasets before running expensive training jobs.
 
 **What it does:**
 - Show random samples from your dataset
-- Validate JSONL format and conversation structure
+- Validate JSONL format and conversation structure (supports optional system messages)
 - Analyze token and character length distributions
-- Check for common formatting errors
+- Check for common formatting errors (role alternation, empty content)
 - Generate statistics about your data
 - Export samples for manual review
 

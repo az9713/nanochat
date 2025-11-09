@@ -1,0 +1,5 @@
+{"messages": [{"role": "system", "content": "You are a helpful assistant."}, {"role": "user", "content": "What is 2+2?"}, {"role": "assistant", "content": "2+2 equals 4."}]}
+{"messages": [{"role": "user", "content": "Tell me a joke."}, {"role": "assistant", "content": "Why did the chicken cross the road? To get to the other side!"}]}
+{"messages": [{"role": "system", "content": "You are a math tutor."}, {"role": "user", "content": "Help me with algebra."}, {"role": "assistant", "content": "Sure! Let's start with the basics."}, {"role": "user", "content": "What is a variable?"}, {"role": "assistant", "content": "A variable is a symbol that represents a number."}]}
+{"messages": [{"role": "system", "content": "You are wrong."}, {"role": "assistant", "content": "This should fail - system must be followed by user"}]}
+{"messages": [{"role": "user", "content": "First"}, {"role": "user", "content": "This should fail - wrong alternation"}, {"role": "assistant", "content": "Third"}]}
