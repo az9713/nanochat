@@ -67,6 +67,20 @@ class TokenizerPlayground:
     def __init__(self, tokenizer):
         self.tokenizer = tokenizer
 
+        # Build a set of special token IDs for efficient lookup
+        # Handle both string and integer returns from get_special_tokens()
+        self._special_token_ids = set()
+        special_tokens_raw = self.tokenizer.get_special_tokens()
+        for item in special_tokens_raw:
+            if isinstance(item, str):
+                try:
+                    token_id = self.tokenizer.encode_special(item)
+                    self._special_token_ids.add(token_id)
+                except:
+                    pass  # Skip if encoding fails
+            elif isinstance(item, int):
+                self._special_token_ids.add(item)
+
     def tokenize_and_visualize(self, text: str) -> None:
         """
         Tokenize text and display results with colors and details.
@@ -119,10 +133,10 @@ class TokenizerPlayground:
             num_bytes = len(token_bytes)
 
             # Determine token type
-            if token_id < 256:
-                token_type = "Single byte"
-            elif token_str in self.tokenizer.get_special_tokens():
+            if token_id in self._special_token_ids:
                 token_type = "Special token"
+            elif token_id < 256:
+                token_type = "Single byte"
             elif token_str.isspace():
                 token_type = "Whitespace"
             elif token_str.isalpha():
@@ -185,20 +199,40 @@ class TokenizerPlayground:
 
     def analyze_special_tokens(self) -> None:
         """Display all special tokens and their IDs."""
-        special_tokens = self.tokenizer.get_special_tokens()
+        special_tokens_raw = self.tokenizer.get_special_tokens()
+
+        # Handle both string tokens and integer IDs
+        # RustBPETokenizer.get_special_tokens() returns a set of strings
+        # But we handle both cases for robustness
+        token_info = []
+        for item in special_tokens_raw:
+            if isinstance(item, str):
+                # Item is already a token string
+                token_str = item
+                token_id = self.tokenizer.encode_special(item)
+            elif isinstance(item, int):
+                # Item is a token ID - convert to string
+                token_id = item
+                token_str = self.tokenizer.id_to_token(item)
+            else:
+                # Unknown type - skip
+                continue
+            token_info.append((token_str, token_id))
+
+        # Sort by token string for consistent display
+        token_info.sort(key=lambda x: x[0])
 
         print(f"\n{'='*80}")
         print(f"SPECIAL TOKENS")
         print(f"{'='*80}\n")
 
-        print(f"Total special tokens: {len(special_tokens)}\n")
+        print(f"Total special tokens: {len(token_info)}\n")
 
         print(f"{'Token':<30} {'ID':<10}")
         print("-" * 40)
 
-        for token in special_tokens:
-            token_id = self.tokenizer.encode_special(token)
-            print(f"{token:<30} {token_id:<10}")
+        for token_str, token_id in token_info:
+            print(f"{token_str:<30} {token_id:<10}")
 
     def interactive_mode(self) -> None:
         """Run interactive mode where user can input text repeatedly."""
