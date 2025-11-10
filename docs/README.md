@@ -104,9 +104,9 @@ The `tools/` directory contains ready-to-use utilities for learning and experime
   - Perfect for understanding model scaling
 
 - **training_resume_helper.py** - Analyze checkpoints and resume interrupted training
-  - Find and verify checkpoint integrity (nanochat format: model_*.pt + meta_*.json)
+  - Find and verify checkpoint integrity (nanochat format: model_*.pt + meta_*.json + optional optim_*.pt)
   - Calculate training progress and remaining steps
-  - Generate manual resume instructions with code examples
+  - Generate manual resume instructions with code examples (conditional based on optimizer presence)
   - Perfect for recovering from training crashes
 
 More tools coming soon! See the [Feature Implementation Guide](09_feature_implementation_guide.md) for features you can build.

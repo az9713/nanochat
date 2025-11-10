@@ -318,11 +318,11 @@ MODEL SIZE & COST CALCULATOR
 Analyze checkpoints and provide guidance for resuming interrupted training runs.
 
 **What it does:**
-- Find latest checkpoint in nanochat's format (model_*.pt + meta_*.json)
+- Find latest checkpoint in nanochat's format (model_*.pt + meta_*.json + optional optim_*.pt)
 - Verify checkpoint integrity and file structure
 - Display checkpoint metadata (step, loss, model config)
 - Calculate training progress and remaining steps
-- Generate manual resume instructions with code examples
+- Generate manual resume instructions with code examples (conditional based on optimizer presence)
 - Detect warmdown phase for learning rate adjustment
 
 **Why it's useful:**
@@ -358,6 +358,7 @@ TRAINING RESUME REPORT
 Checkpoint directory: out/base_checkpoints/d20
 Model file: model_002500.pt
 Metadata file: meta_002500.json
+Optimizer file: optim_002500.pt
 
 Last saved step: 2,500
 Validation BPB: 1.2340
@@ -386,17 +387,18 @@ Resume Parameters:
 ================================================================================
 ```
 
-With `--command`, generates manual resume instructions showing how to use `load_checkpoint()` from `checkpoint_manager.py` to manually load and resume training.
+With `--command`, generates manual resume instructions showing how to use `load_checkpoint()` from `checkpoint_manager.py` to manually load and resume training. Instructions are conditional based on whether optimizer checkpoint exists.
 
 **Dependencies:** PyTorch (for checkpoint loading)
 
 **Learning outcomes:**
-- Understand nanochat's checkpoint file format (model_*.pt + meta_*.json)
+- Understand nanochat's checkpoint file format (model_*.pt + meta_*.json + optional optim_*.pt)
 - Learn about training state management (model weights, optimizer state, metadata)
 - Practice working with PyTorch state_dicts and JSON metadata
 - See how to calculate training progress and detect training phases
 - Understand manual checkpoint loading using checkpoint_manager.py
 - Learn about warmdown phase in training schedules
+- Understand why optimizer checkpoints are optional (fine-tuning vs continuation)
 
 #### 🔜 Planned Features (See `docs/09_feature_implementation_guide.md`)
 
