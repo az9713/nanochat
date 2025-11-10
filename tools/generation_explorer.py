@@ -49,6 +49,12 @@ class GenerationExplorer:
         current_tokens = prompt_tokens.copy()
 
         for step in range(max_tokens):
+            # Check if we've reached the model's sequence length limit
+            if len(current_tokens) >= self.model.config.sequence_len:
+                print(f"\n⚠ Warning: Reached model's sequence length limit ({self.model.config.sequence_len} tokens)")
+                print(f"Stopping generation early to prevent overflow.")
+                break
+
             # Forward pass
             with torch.no_grad():
                 ids = torch.tensor([current_tokens], dtype=torch.long, device=self.model.get_device())
@@ -75,13 +81,14 @@ class GenerationExplorer:
 
             # Show probabilities
             if show_probs:
-                # Get top alternatives
-                top_probs, top_indices = torch.topk(probs, num_alternatives)
+                # Get top alternatives (clamp to vocab size to avoid errors)
+                actual_alternatives = min(num_alternatives, probs.size(-1))
+                top_probs, top_indices = torch.topk(probs, actual_alternatives)
 
                 print(f"Step {step + 1}:")
                 print(f"  Sampled: [{next_token}] \"{self.tokenizer.decode([next_token])}\" (p={probs[next_token]:.4f})")
 
-                print(f"  Top {num_alternatives} alternatives:")
+                print(f"  Top {actual_alternatives} alternatives:")
                 for i, (prob, idx) in enumerate(zip(top_probs, top_indices)):
                     token_str = self.tokenizer.decode([idx.item()])
                     marker = "←" if idx.item() == next_token else " "
@@ -204,14 +211,39 @@ class GenerationExplorer:
                     break
 
                 if user_input.lower().startswith('temp '):
-                    temperature = float(user_input.split()[1])
-                    print(f"Set temperature to {temperature}")
+                    parts = user_input.split()
+                    if len(parts) < 2:
+                        print("Usage: temp <value> (e.g., 'temp 0.9')")
+                        continue
+                    try:
+                        temp_value = float(parts[1])
+                        if temp_value <= 0:
+                            print("Error: Temperature must be positive (> 0)")
+                            continue
+                        temperature = temp_value
+                        print(f"Set temperature to {temperature}")
+                    except ValueError:
+                        print(f"Error: Invalid temperature value '{parts[1]}'. Must be a positive number.")
                     continue
 
                 if user_input.lower().startswith('topk '):
-                    value = user_input.split()[1]
-                    top_k = None if value.lower() == 'none' else int(value)
-                    print(f"Set top-k to {top_k}")
+                    parts = user_input.split()
+                    if len(parts) < 2:
+                        print("Usage: topk <value> (e.g., 'topk 50' or 'topk none')")
+                        continue
+                    try:
+                        value = parts[1]
+                        if value.lower() == 'none':
+                            top_k = None
+                        else:
+                            k_value = int(value)
+                            if k_value <= 0:
+                                print("Error: top_k must be positive (> 0)")
+                                continue
+                            top_k = k_value
+                        print(f"Set top-k to {top_k}")
+                    except ValueError:
+                        print(f"Error: Invalid top-k value '{parts[1]}'. Must be a positive integer or 'none'.")
                     continue
 
                 if user_input.lower() == 'probs':
@@ -285,6 +317,15 @@ def main():
         print("  - Use --source to specify model type (base, mid, sft, rl)")
         print("  - Use --model-tag to specify model (e.g., d20)")
         print("  - Use --step to specify checkpoint step (optional)")
+        return
+
+    # Validate arguments
+    if args.temperature <= 0:
+        print(f"Error: Temperature must be positive (> 0), got {args.temperature}")
+        return
+
+    if args.top_k is not None and args.top_k <= 0:
+        print(f"Error: top-k must be positive (> 0), got {args.top_k}")
         return
 
     explorer = GenerationExplorer(model, tokenizer)
