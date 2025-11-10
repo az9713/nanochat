@@ -228,6 +228,16 @@ Quick reference for terms you'll encounter:
 5. **Ask questions** - Use comments in code to note confusion points
 6. **Draw diagrams** - Visualize data flowing through the system
 
+## 🔧 Developer Resources
+
+For developers implementing features or contributing to nanochat:
+
+- **[Bug Verification Checklist](bug_verification_checklist.md)** - Comprehensive 8-bug-type verification framework
+  - Enhanced checklist for verifying code correctness
+  - Guards against common bugs (functional, logical, bounds, security, etc.)
+  - Includes real examples from nanochat development
+  - Use when implementing features from the Feature Implementation Guide
+
 ## 🚀 Next Steps
 
 Ready to start? Head to [Document 1: Introduction to LLMs and PyTorch](01_introduction.md)!

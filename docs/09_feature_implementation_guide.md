@@ -2,6 +2,8 @@
 
 This guide provides detailed implementation plans for 10 beginner-friendly features that can be added to nanochat. Each feature includes detailed explanations, code snippets, and step-by-step implementation instructions.
 
+**📋 Important:** When implementing features, use the **[Bug Verification Checklist](bug_verification_checklist.md)** to verify your code against 8 bug types. This ensures production-quality implementations.
+
 **Implementation Status:** 7/10 features completed ✅
 - Feature 1: Interactive Tokenizer Playground ✅ **IMPLEMENTED**
 - Feature 3: Checkpoint Browser & Comparator ✅ **IMPLEMENTED**
