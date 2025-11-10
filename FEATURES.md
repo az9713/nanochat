@@ -551,12 +551,99 @@ With `--command`, generates manual resume instructions showing how to use `load_
 - Learn about warmdown phase in training schedules
 - Understand why optimizer checkpoints are optional (fine-tuning vs continuation)
 
+##### 10. Conversation Template Builder (`conversation_template_builder.py`)
+Create, validate, and visualize conversation templates for fine-tuning nanochat models.
+
+**What it does:**
+- Create simple 2-turn conversations (user → assistant)
+- Create multi-turn conversations with proper role alternation
+- Create conversations with Python tool usage
+- Validate conversation structure and format
+- Show how conversations get tokenized with color-coded visualization
+- Display supervision statistics (which tokens the model learns from)
+- Batch validate JSONL datasets
+- Interactive mode for building conversations step-by-step
+- Save/load conversations as JSON files
+
+**Why it's useful:**
+- Prepare training data for fine-tuning (SFT phase)
+- Understand nanochat's conversation format
+- See exactly how conversations become token sequences
+- Validate datasets before expensive training runs
+- Learn which tokens are supervised vs unsupervised
+- Debug tokenization issues in chat data
+- Create examples for testing model behavior
+
+**Usage:**
+```bash
+# Interactive mode - build conversations step by step
+python tools/conversation_template_builder.py --interactive
+
+# Create a simple conversation
+python tools/conversation_template_builder.py --simple "What is 2+2?" "It's 4."
+
+# Validate a conversation file
+python tools/conversation_template_builder.py --validate conversation.json
+
+# Batch validate a JSONL dataset
+python tools/conversation_template_builder.py --batch-validate dataset.jsonl --output report.json
+```
+
+**Example output:**
+```
+====================================================================================================
+CONVERSATION TOKENIZATION
+====================================================================================================
+
+✓ Conversation is valid
+
+Conversation Structure:
+----------------------------------------------------------------------------------------------------
+  1. [USER]: What is 2+2?
+  2. [ASSISTANT]: The answer is 4.
+
+Tokenization Statistics:
+----------------------------------------------------------------------------------------------------
+  Total tokens:       18
+  Supervised tokens:  8 (tokens the model learns from)
+  Unsupervised:       10 (prompt/context tokens)
+  Supervision ratio:  44.4%
+
+Tokenized Format:
+----------------------------------------------------------------------------------------------------
+(Green = supervised, Red = unsupervised)
+
+<|bos|>|<|user_start|>|What| is| 2|+|2|?|<|user_end|>|<|assistant_start|>|The| answer| is| 4|.|<|assistant_end|>
+[Red tokens: bos, user_start, content, user_end, assistant_start | Green tokens: assistant content | Red: assistant_end]
+```
+
+**Interactive mode commands:**
+- `simple` - Create 2-turn conversation
+- `multi` - Create multi-turn conversation
+- `tool` - Create conversation with Python tool usage
+- `load <file>` - Load conversation from JSON
+- `save <file>` - Save last conversation
+- `validate <file>` - Validate a conversation file
+- `show` - Display last conversation
+- `tokenize` - Show tokenization of last conversation
+
+**Dependencies:** Standard library only (for conversation creation), nanochat tokenizer (for tokenization visualization)
+
+**Learning outcomes:**
+- Understand nanochat's conversation format (messages with roles)
+- Learn about supervised vs unsupervised tokens in fine-tuning
+- See how special tokens (<|user_start|>, <|assistant_end|>, etc.) work
+- Practice JSON data structure design for ML
+- Understand conversation alternation rules (user → assistant → user...)
+- Learn about tool usage format (<|python_start|>, <|output_start|>)
+- Prepare high-quality training data for SFT phase
+- Debug tokenization and formatting issues before training
+
 #### 🔜 Planned Features (See `docs/09_feature_implementation_guide.md`)
 
 2. **Training Progress Dashboard** - Real-time visualization of training metrics
 8. **Simple Attention Visualizer** - See what the model attends to
 9. **Learning Rate Finder** - Find optimal learning rate automatically
-10. **Conversation Template Builder** - Create and test custom chat templates
 
 ## Design Principles
 

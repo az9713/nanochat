@@ -123,6 +123,15 @@ The `tools/` directory contains ready-to-use utilities for learning and experime
   - Generate manual resume instructions with code examples (conditional based on optimizer presence)
   - Perfect for recovering from training crashes
 
+- **conversation_template_builder.py** - Create and validate conversation templates
+  - Build conversations with proper role alternation (user/assistant/system)
+  - Validate conversation structure and format
+  - Show tokenization with color-coded visualization
+  - Display supervision statistics (which tokens model learns from)
+  - Batch validate JSONL datasets
+  - Interactive mode for building conversations step-by-step
+  - Perfect for preparing fine-tuning data and understanding conversation format
+
 More tools coming soon! See the [Feature Implementation Guide](09_feature_implementation_guide.md) for features you can build.
 
 ## 🎯 How to Use This Documentation
@@ -184,12 +193,13 @@ nanochat/
 ├── tasks/                 # Evaluation tasks (see doc 7)
 ├── docs/                  # Complete documentation (you are here!)
 └── tools/                 # Learning and utility tools (see doc 9)
-    ├── tokenizer_playground.py  # Interactive tokenizer visualization
-    ├── checkpoint_browser.py    # Checkpoint browsing and comparison
-    ├── dataset_inspector.py     # Dataset analysis and validation
-    ├── model_calculator.py      # Model size & cost calculator
-    ├── generation_explorer.py   # Generation parameter exploration
-    └── training_resume_helper.py  # Training checkpoint analysis and resume
+    ├── tokenizer_playground.py          # Interactive tokenizer visualization
+    ├── checkpoint_browser.py            # Checkpoint browsing and comparison
+    ├── dataset_inspector.py             # Dataset analysis and validation
+    ├── model_calculator.py              # Model size & cost calculator
+    ├── generation_explorer.py           # Generation parameter exploration
+    ├── training_resume_helper.py        # Training checkpoint analysis and resume
+    └── conversation_template_builder.py # Create and validate conversation templates
 ```
 
 ## 📖 Glossary
