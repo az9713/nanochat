@@ -103,6 +103,13 @@ The `tools/` directory contains ready-to-use utilities for learning and experime
   - Calculate training time and FLOPs
   - Perfect for understanding model scaling
 
+- **generation_explorer.py** - Explore generation parameters and sampling strategies
+  - Load models and generate text with different parameters
+  - Show probability distributions at each generation step
+  - Compare outputs at different temperatures and top-k values
+  - Interactive mode for experimentation
+  - Perfect for understanding sampling strategies and tuning generation
+
 - **training_resume_helper.py** - Analyze checkpoints and resume interrupted training
   - Find and verify checkpoint integrity (nanochat format: model_*.pt + meta_*.json + optional optim_*.pt)
   - Calculate training progress and remaining steps
@@ -173,6 +180,7 @@ nanochat/
     ├── tokenizer_playground.py  # Interactive tokenizer visualization
     ├── dataset_inspector.py     # Dataset analysis and validation
     ├── model_calculator.py      # Model size & cost calculator
+    ├── generation_explorer.py   # Generation parameter exploration
     └── training_resume_helper.py  # Training checkpoint analysis and resume
 ```
 
