@@ -90,6 +90,14 @@ The `tools/` directory contains ready-to-use utilities for learning and experime
   - Compare tokenization efficiency of different texts
   - Perfect for understanding how "Hello world" becomes `[1000, 1001, 33]`
 
+- **training_dashboard.py** - Monitor and visualize training progress
+  - Read checkpoint metadata and extract training metrics
+  - Display training summary with best checkpoint identification
+  - Show progress table and generate visualization plots
+  - Export metrics to CSV for external analysis
+  - Standalone tool that doesn't require modifying training scripts
+  - Perfect for tracking experiments and debugging training issues
+
 - **dataset_inspector.py** - Analyze and validate training datasets
   - Preview random samples from your dataset
   - Validate format and find errors before training
@@ -194,6 +202,7 @@ nanochat/
 ├── docs/                  # Complete documentation (you are here!)
 └── tools/                 # Learning and utility tools (see doc 9)
     ├── tokenizer_playground.py          # Interactive tokenizer visualization
+    ├── training_dashboard.py            # Monitor and visualize training progress
     ├── checkpoint_browser.py            # Checkpoint browsing and comparison
     ├── dataset_inspector.py             # Dataset analysis and validation
     ├── model_calculator.py              # Model size & cost calculator

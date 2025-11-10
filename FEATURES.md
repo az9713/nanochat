@@ -118,6 +118,119 @@ Index  Token ID   Text                                Bytes    Type
 - Understand token efficiency and compression
 - Debug tokenization-related issues
 
+##### 2. Training Progress Dashboard (`training_dashboard.py`)
+Monitor and visualize training progress by reading checkpoint metadata and logs.
+
+**What it does:**
+- Read checkpoint metadata files (meta_*.json) from training runs
+- Extract training metrics (steps, train_loss, val_bpb, learning_rate)
+- Display training summary with best checkpoint identification
+- Show progress table with all checkpoints and metrics
+- Generate visualization plots of loss curves and learning rate schedule
+- Export metrics to CSV for external analysis
+- Standalone tool that doesn't require modifying training scripts
+
+**Why it's useful:**
+- Track training progress without modifying training code
+- Quickly identify best checkpoints by validation loss
+- Visualize training dynamics (loss curves, LR schedule)
+- Monitor experiments remotely by checking checkpoint directory
+- Export data for custom analysis and plotting
+- Debug training issues (loss spikes, learning rate problems)
+- Compare multiple training runs side-by-side
+- Learn about training dynamics and optimization
+
+**Usage:**
+```bash
+# Show training summary (default)
+python tools/training_dashboard.py out/base_checkpoints/d20
+
+# Show progress table with all checkpoints
+python tools/training_dashboard.py out/base_checkpoints/d20 --progress
+
+# Generate visualization plot
+python tools/training_dashboard.py out/base_checkpoints/d20 --plot
+
+# Export metrics to CSV
+python tools/training_dashboard.py out/base_checkpoints/d20 --export-csv
+
+# Custom output path for plot or CSV
+python tools/training_dashboard.py out/base_checkpoints/d20 --plot --output my_plot.png
+python tools/training_dashboard.py out/base_checkpoints/d20 --export-csv --output metrics.csv
+```
+
+**Example output (summary mode):**
+```
+====================================================================================================
+TRAINING DASHBOARD
+====================================================================================================
+
+Checkpoint directory: out/base_checkpoints/d20
+Total checkpoints: 15
+
+Training range:
+  First checkpoint: Step 0
+  Last checkpoint:  Step 7200
+
+Latest metrics (step 7200):
+  Train loss: 1.2345
+  Val BPB:    1.1823
+  LR:         0.000100
+
+Best validation checkpoint:
+  Step:    5400
+  Val BPB: 1.1642
+
+Model configuration:
+  Layers:       20
+  Embedding:    512
+  Seq length:   1024
+
+====================================================================================================
+```
+
+**Example output (progress mode):**
+```
+====================================================================================================
+TRAINING PROGRESS
+====================================================================================================
+
+Step       Train Loss      Val BPB         Learning Rate
+----------------------------------------------------------------------------------------------------
+0          4.2156          N/A             0.001000
+500        3.1234          3.2145          0.001000
+1000       2.8765          2.9234          0.001000
+1500       2.6543          2.7123          0.000950
+...
+====================================================================================================
+```
+
+**Plot output:**
+Generates a PNG file with two subplots:
+1. Training and validation loss curves over time
+2. Learning rate schedule over time
+
+Both plots include:
+- Clear axis labels and titles
+- Grid for easy reading
+- Legend for multiple metrics
+- Professional formatting
+
+**Dependencies:**
+- Python standard library only (core functionality)
+- matplotlib (optional, for plotting - gracefully falls back if not available)
+
+**Learning outcomes:**
+- Understand checkpoint metadata structure (meta_*.json format)
+- Learn about training metrics and their significance
+- Practice working with JSON data and file I/O
+- See how to track and visualize training progress
+- Understand learning rate schedules and warmdown phases
+- Learn about validation metrics (BPB) vs training loss
+- Practice creating data analysis and visualization tools
+- Understand matplotlib basics for scientific plotting
+- Learn graceful degradation (optional dependencies)
+
 ##### 4. Dataset Inspector (`dataset_inspector.py`)
 Analyze and validate training datasets before running expensive training jobs.
 
@@ -641,7 +754,6 @@ Tokenized Format:
 
 #### 🔜 Planned Features (See `docs/09_feature_implementation_guide.md`)
 
-2. **Training Progress Dashboard** - Real-time visualization of training metrics
 8. **Simple Attention Visualizer** - See what the model attends to
 9. **Learning Rate Finder** - Find optimal learning rate automatically
 
@@ -691,13 +803,15 @@ The original nanochat is minimalist and production-focused. This fork adds a com
 ## Status
 
 - ✅ Documentation: Complete (9 guides covering all aspects)
-- ✅ Tools: 6/10 features implemented
+- ✅ Tools: 7/10 features implemented
   - Feature 1: Interactive Tokenizer Playground ✅
+  - Feature 2: Training Progress Dashboard ✅
   - Feature 3: Checkpoint Browser & Comparator ✅
   - Feature 4: Dataset Inspector ✅
   - Feature 5: Model Size & Cost Calculator ✅
   - Feature 6: Generation Parameter Explorer ✅
   - Feature 7: Training Resume Helper ✅
+  - Feature 10: Conversation Template Builder ✅
 - 🔄 Actively adding more learning features
 
 ## Acknowledgments
