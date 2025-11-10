@@ -194,10 +194,13 @@ class ConversationTemplateBuilder:
         # Validate alternation (system can be at start)
         start_idx = 1 if messages[0]["role"] == "system" else 0
 
+        # Ensure there's at least one message after optional system message
+        if start_idx >= len(messages):
+            return False, "Conversation with system message must have at least one user/assistant message"
+
         # First real message must be from user
-        if start_idx < len(messages):
-            if messages[start_idx]["role"] != "user":
-                return False, f"First message (after optional system) must be from user, got '{messages[start_idx]['role']}'"
+        if messages[start_idx]["role"] != "user":
+            return False, f"First message (after optional system) must be from user, got '{messages[start_idx]['role']}'"
 
         # Check alternation
         for i in range(start_idx, len(messages)):
