@@ -103,6 +103,13 @@ The `tools/` directory contains ready-to-use utilities for learning and experime
   - Calculate training time and FLOPs
   - Perfect for understanding model scaling
 
+- **checkpoint_browser.py** - Browse and compare model checkpoints
+  - List all checkpoints with metadata and validation metrics
+  - Compare checkpoints side-by-side
+  - Inspect detailed checkpoint information
+  - Track disk usage and find best models
+  - Perfect for managing training experiments
+
 - **generation_explorer.py** - Explore generation parameters and sampling strategies
   - Load models and generate text with different parameters
   - Show probability distributions at each generation step
@@ -178,6 +185,7 @@ nanochat/
 ├── docs/                  # Complete documentation (you are here!)
 └── tools/                 # Learning and utility tools (see doc 9)
     ├── tokenizer_playground.py  # Interactive tokenizer visualization
+    ├── checkpoint_browser.py    # Checkpoint browsing and comparison
     ├── dataset_inspector.py     # Dataset analysis and validation
     ├── model_calculator.py      # Model size & cost calculator
     ├── generation_explorer.py   # Generation parameter exploration

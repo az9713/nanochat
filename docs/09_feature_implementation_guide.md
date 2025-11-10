@@ -2,8 +2,9 @@
 
 This guide provides detailed implementation plans for 10 beginner-friendly features that can be added to nanochat. Each feature includes detailed explanations, code snippets, and step-by-step implementation instructions.
 
-**Implementation Status:** 5/10 features completed ✅
+**Implementation Status:** 6/10 features completed ✅
 - Feature 1: Interactive Tokenizer Playground ✅ **IMPLEMENTED**
+- Feature 3: Checkpoint Browser & Comparator ✅ **IMPLEMENTED**
 - Feature 4: Dataset Inspector ✅ **IMPLEMENTED**
 - Feature 5: Model Size & Cost Calculator ✅ **IMPLEMENTED**
 - Feature 6: Generation Parameter Explorer ✅ **IMPLEMENTED**
@@ -12,7 +13,7 @@ This guide provides detailed implementation plans for 10 beginner-friendly featu
 ## Table of Contents
 1. [Feature 1: Interactive Tokenizer Playground](#feature-1-interactive-tokenizer-playground) ✅ **IMPLEMENTED**
 2. [Feature 2: Training Progress Dashboard](#feature-2-training-progress-dashboard)
-3. [Feature 3: Checkpoint Browser & Comparator](#feature-3-checkpoint-browser--comparator)
+3. [Feature 3: Checkpoint Browser & Comparator](#feature-3-checkpoint-browser--comparator) ✅ **IMPLEMENTED**
 4. [Feature 4: Dataset Inspector](#feature-4-dataset-inspector) ✅ **IMPLEMENTED**
 5. [Feature 5: Model Size & Cost Calculator](#feature-5-model-size--cost-calculator) ✅ **IMPLEMENTED**
 6. [Feature 6: Generation Parameter Explorer](#feature-6-generation-parameter-explorer) ✅ **IMPLEMENTED**
@@ -736,6 +737,8 @@ Plot shows 4 panels with loss curves, LR schedule, throughput, and memory usage.
 ---
 
 ## Feature 3: Checkpoint Browser & Comparator
+
+✅ **STATUS: IMPLEMENTED** - Available in `tools/checkpoint_browser.py`
 
 ### Why This Feature is Useful
 
