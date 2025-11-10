@@ -2,6 +2,22 @@
 
 A comprehensive checklist for verifying code against 8 bug types. Use this checklist for every feature implementation to ensure thorough verification.
 
+## Credits and Attribution
+
+**Original 7 Bug Types Framework:**
+- Based on "7 Common Types of Software Bugs every Tester should know in 2024"
+- Source: [BrowserStack Guide](https://www.browserstack.com/guide/types-of-software-bugs)
+- Bug Types 1-7 adapted from this framework
+
+**Bug Type #8 (Guard Logic Bugs):**
+- Added based on lessons learned during nanochat Feature 10 implementation
+- Bug discovered by: **OpenAI Codex Code Review**
+- Enhanced verification methodology developed from real-world bug analysis
+
+**All bug fixes in nanochat Feature 10 suggested by OpenAI Codex Code Review.**
+
+---
+
 ## Quick Reference
 
 1. ✅ **Functional Bugs** - Core features work correctly
@@ -711,6 +727,14 @@ def validate_conversation(self, conversation):
 ## Revision History
 
 - v1.0 (2025-11-10): Initial version with 8 bug types
-- Added Bug Type #8: Guard Logic & Control Flow Bugs
-- Enhanced Bug Type #6: Added guard logic verification
-- Enhanced Bug Type #4: Added pattern consistency checks
+  - Bug Types 1-7 based on BrowserStack article "7 Common Types of Software Bugs every Tester should know in 2024"
+  - Added Bug Type #8: Guard Logic & Control Flow Bugs (inspired by OpenAI Codex code review findings)
+  - Enhanced Bug Type #6: Added guard logic verification
+  - Enhanced Bug Type #4: Added pattern consistency checks
+  - All enhancements based on real bugs found by OpenAI Codex Code Review during Feature 10 implementation
+
+## Acknowledgments
+
+- **BrowserStack** - For the foundational 7 bug types framework
+- **OpenAI Codex Code Review** - For discovering critical bugs and inspiring enhanced verification methodology
+- **nanochat project** - For providing real-world examples and test cases

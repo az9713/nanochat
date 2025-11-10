@@ -195,6 +195,8 @@ class ConversationTemplateBuilder:
         start_idx = 1 if messages[0]["role"] == "system" else 0
 
         # Ensure there's at least one message after optional system message
+        # Bug fix suggested by OpenAI Codex Code Review: Guard logic was inverted,
+        # causing validation to be skipped for system-only conversations
         if start_idx >= len(messages):
             return False, "Conversation with system message must have at least one user/assistant message"
 
