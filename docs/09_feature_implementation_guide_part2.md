@@ -4,6 +4,8 @@ This is the continuation of the Feature Implementation Guide, covering features 
 
 **See [Part 1](09_feature_implementation_guide.md) for Features 1-5.**
 
+**📋 Important:** When implementing features, use the **[Bug Verification Checklist](bug_verification_checklist.md)** to verify your code against 8 bug types.
+
 ## Table of Contents (Part 2)
 6. [Feature 6: Generation Parameter Explorer](#feature-6-generation-parameter-explorer) ✅ **IMPLEMENTED**
 7. [Feature 7: Training Resume Helper](#feature-7-training-resume-helper) ✅ **IMPLEMENTED**

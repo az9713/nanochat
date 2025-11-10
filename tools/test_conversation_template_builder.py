@@ -262,6 +262,16 @@ def test_validation():
     assert not is_valid, "Wrong alternation should be rejected"
     print(f"✓ Wrong alternation rejected: {error}")
 
+    # Invalid: system-only conversation (no user/assistant messages)
+    invalid_conversation = {
+        "messages": [
+            {"role": "system", "content": "You are helpful"}
+        ]
+    }
+    is_valid, error = builder.validate_conversation(invalid_conversation)
+    assert not is_valid, "System-only conversation should be rejected"
+    print(f"✓ System-only conversation rejected: {error}")
+
     return True
 
 
