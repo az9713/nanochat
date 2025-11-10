@@ -314,6 +314,69 @@ MODEL SIZE & COST CALCULATOR
 - See how batch size and sequence length affect training
 - Calculate FLOPs for computational cost estimation
 
+##### 3. Checkpoint Browser & Comparator (`checkpoint_browser.py`)
+Browse, inspect, and compare model checkpoints across training runs.
+
+**What it does:**
+- Scan and list all checkpoints in your training directories
+- Display checkpoint metadata (step, validation loss, model architecture)
+- Compare two checkpoints side-by-side
+- Inspect detailed information about specific checkpoints
+- Track disk usage across all checkpoints
+- Support for nanochat's multi-file checkpoint format
+
+**Why it's useful:**
+- Find your best checkpoint by validation loss
+- Compare different model sizes and configurations
+- Track experiment history and model evolution
+- Understand what each checkpoint contains
+- Manage disk space by identifying old checkpoints
+- Verify checkpoint integrity before resuming training
+
+**Usage:**
+```bash
+# List all checkpoints
+python tools/checkpoint_browser.py --list
+
+# Sort by validation loss (find best checkpoint)
+python tools/checkpoint_browser.py --list --sort val_bpb
+
+# Inspect a specific model (shows latest checkpoint)
+python tools/checkpoint_browser.py --inspect d20
+
+# Inspect specific step
+python tools/checkpoint_browser.py --inspect d20 --step 5000
+
+# Compare two checkpoints
+python tools/checkpoint_browser.py --compare d20 d26
+```
+
+**Example output:**
+```
+========================================================================================
+CHECKPOINTS (sorted by val_bpb)
+========================================================================================
+
+Model    | Type | Step  | Val BPB | Layers | Dim | Size (MB) | Optim | Modified
+--------------------------------------------------------------------------------------
+d26      | base | 7,200 | 1.1823  | 26     | 832 | 3982.1    | ✓     | 2025-11-07 09:15
+d20      | base | 5,400 | 1.2145  | 20     | 512 | 2145.3    | ✓     | 2025-11-08 14:32
+d20_sft  | chat | 2,000 | 1.3421  | 20     | 512 | 2145.3    | ✓     | 2025-11-06 18:45
+
+Total checkpoints: 3
+Total disk usage: 8.27 GB
+```
+
+**Dependencies:** None (Python standard library only; tabulate optional for better formatting)
+
+**Learning outcomes:**
+- Understand nanochat's checkpoint file structure (model_*.pt + meta_*.json + optim_*.pt)
+- Learn about checkpoint metadata and what gets saved during training
+- Practice working with file systems and directory scanning
+- See how to compare model configurations
+- Understand the relationship between model size and checkpoint size
+- Learn about glob patterns and file matching
+
 ##### 6. Generation Parameter Explorer (`generation_explorer.py`)
 Interactively explore how sampling parameters affect model text generation.
 
@@ -491,7 +554,6 @@ With `--command`, generates manual resume instructions showing how to use `load_
 #### 🔜 Planned Features (See `docs/09_feature_implementation_guide.md`)
 
 2. **Training Progress Dashboard** - Real-time visualization of training metrics
-3. **Checkpoint Browser & Comparator** - Explore saved models and compare performance
 8. **Simple Attention Visualizer** - See what the model attends to
 9. **Learning Rate Finder** - Find optimal learning rate automatically
 10. **Conversation Template Builder** - Create and test custom chat templates
@@ -542,8 +604,9 @@ The original nanochat is minimalist and production-focused. This fork adds a com
 ## Status
 
 - ✅ Documentation: Complete (9 guides covering all aspects)
-- ✅ Tools: 5/10 features implemented
+- ✅ Tools: 6/10 features implemented
   - Feature 1: Interactive Tokenizer Playground ✅
+  - Feature 3: Checkpoint Browser & Comparator ✅
   - Feature 4: Dataset Inspector ✅
   - Feature 5: Model Size & Cost Calculator ✅
   - Feature 6: Generation Parameter Explorer ✅
