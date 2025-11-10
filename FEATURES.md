@@ -314,6 +314,94 @@ MODEL SIZE & COST CALCULATOR
 - See how batch size and sequence length affect training
 - Calculate FLOPs for computational cost estimation
 
+##### 6. Generation Parameter Explorer (`generation_explorer.py`)
+Interactively explore how sampling parameters affect model text generation.
+
+**What it does:**
+- Load trained models and generate text with different parameters
+- Show probability distributions at each generation step
+- Compare outputs at different temperatures side-by-side
+- Compare different top-k filtering values
+- Visualize what tokens the model considers likely
+- Interactive mode for experimentation
+
+**Why it's useful:**
+- Understand how temperature/top-k/top-p affect output quality
+- Find optimal generation settings for your use case
+- See model confidence and probability distributions
+- Debug why outputs are too random or too repetitive
+- Learn sampling strategies (greedy, temperature, top-k)
+- Understand the randomness vs quality trade-off
+
+**Usage:**
+```bash
+# Interactive mode - experiment with different settings
+python tools/generation_explorer.py --source base --interactive
+
+# Generate with probability display
+python tools/generation_explorer.py --source base \
+    --prompt "The capital of France is" --show-probs
+
+# Compare different temperatures
+python tools/generation_explorer.py --source base \
+    --prompt "Once upon a time" --compare-temp
+
+# Compare different top-k values
+python tools/generation_explorer.py --source base \
+    --prompt "In the beginning" --compare-topk
+
+# Use specific model and device
+python tools/generation_explorer.py --source sft --model-tag d20 \
+    --device cuda --prompt "What is 2+2?" --show-probs
+```
+
+**Example output:**
+```
+====================================================================================================
+GENERATION WITH PROBABILITIES
+====================================================================================================
+
+Prompt: "The capital of France is"
+Temperature: 0.9, Top-k: None
+
+----------------------------------------------------------------------------------------------------
+
+Step 1:
+  Sampled: [4342] " Paris" (p=0.9234)
+  Top 5 alternatives:
+    1. [ 4342] " Paris              " p=0.9234 ←
+    2. [ 1234] " the                " p=0.0421
+    3. [ 5678] " located            " p=0.0156
+    4. [ 9012] " a                  " p=0.0098
+    5. [ 3456] " one                " p=0.0045
+
+Step 2:
+  Sampled: [287] "," (p=0.3421)
+  Top 5 alternatives:
+    1. [  287] ",                  " p=0.3421 ←
+    2. [  288] ".                  " p=0.2987
+    3. [ 1098] " which              " p=0.1234
+    4. [  345] ";                  " p=0.0876
+    5. [  543] " and                " p=0.0654
+
+----------------------------------------------------------------------------------------------------
+
+Full generation:
+" Paris, the city of lights"
+```
+
+With `--compare-temp`, compares outputs at different temperatures (0.1, 0.5, 0.9, 1.2, 1.5) to show how temperature affects randomness and creativity.
+
+**Dependencies:** PyTorch (for model loading and inference)
+
+**Learning outcomes:**
+- Understand sampling strategies (temperature, top-k, top-p)
+- Learn about probability distributions in language models
+- See how model confidence varies by token
+- Practice model loading and inference in PyTorch
+- Understand the trade-off between determinism and creativity
+- Learn when to use greedy vs sampling-based generation
+
 ##### 7. Training Resume Helper (`training_resume_helper.py`)
 Analyze checkpoints and provide guidance for resuming interrupted training runs.
 
@@ -404,7 +492,6 @@ With `--command`, generates manual resume instructions showing how to use `load_
 
 2. **Training Progress Dashboard** - Real-time visualization of training metrics
 3. **Checkpoint Browser & Comparator** - Explore saved models and compare performance
-6. **Generation Parameter Explorer** - Experiment with temperature, top-k, top-p
 8. **Simple Attention Visualizer** - See what the model attends to
 9. **Learning Rate Finder** - Find optimal learning rate automatically
 10. **Conversation Template Builder** - Create and test custom chat templates
@@ -455,10 +542,11 @@ The original nanochat is minimalist and production-focused. This fork adds a com
 ## Status
 
 - ✅ Documentation: Complete (9 guides covering all aspects)
-- ✅ Tools: 4/10 features implemented
+- ✅ Tools: 5/10 features implemented
   - Feature 1: Interactive Tokenizer Playground ✅
   - Feature 4: Dataset Inspector ✅
   - Feature 5: Model Size & Cost Calculator ✅
+  - Feature 6: Generation Parameter Explorer ✅
   - Feature 7: Training Resume Helper ✅
 - 🔄 Actively adding more learning features
 

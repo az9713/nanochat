@@ -15,6 +15,8 @@ This is the continuation of the Feature Implementation Guide, covering features 
 
 ## Feature 6: Generation Parameter Explorer
 
+✅ **STATUS: IMPLEMENTED** - Available in `tools/generation_explorer.py`
+
 ### Why This Feature is Useful
 
 **Problem it solves:**
