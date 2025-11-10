@@ -381,8 +381,9 @@ python tools/generation_explorer.py --checkpoint out/chat_checkpoints/d20_sft \
 **⚠️ NOTE:** This feature has been implemented. For the actual working code, see `tools/training_resume_helper.py`.
 
 **Key implementation notes:**
-- Nanochat saves checkpoints as separate files: `model_<step>.pt` (weights) and `meta_<step>.json` (metadata)
+- Nanochat saves checkpoints as separate files: `model_<step>.pt` (weights), `meta_<step>.json` (metadata), and `optim_<step>.pt` (optimizer, optional)
 - The tool finds the latest checkpoint by scanning for `model_*.pt` files and matching `meta_*.json` files
+- The tool detects whether optimizer checkpoint exists and generates conditional resume instructions accordingly
 - Metadata is loaded from JSON, not from inside the .pt file
 - Since nanochat training scripts don't have built-in resume support, the tool generates manual resume instructions using `checkpoint_manager.load_checkpoint()`
 

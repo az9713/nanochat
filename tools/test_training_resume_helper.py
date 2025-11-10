@@ -102,10 +102,11 @@ def test_training_resume_helper():
         print("-" * 80)
         found = helper.find_latest_checkpoint()
         if found:
-            found_step, found_model, found_meta = found
+            found_step, found_model, found_meta, has_optim = found
             print(f"✓ Found checkpoint at step {found_step}")
             print(f"  Model: {os.path.basename(found_model)}")
             print(f"  Metadata: {os.path.basename(found_meta)}")
+            print(f"  Has optimizer: {has_optim}")
         else:
             print("✗ Failed to find checkpoint")
         print()
@@ -133,17 +134,24 @@ def test_training_resume_helper():
         print(f"✓ Progress: {resume_params['progress_pct']:.1f}%")
         print()
 
-        # Test 5: Print full report
-        print("TEST 5: Generate full resume report")
+        # Test 5: Print full report (without optimizer - test both cases)
+        print("TEST 5: Generate full resume report (no optimizer)")
         print("-" * 80)
-        helper.print_resume_report(step, model_path, meta_path, target_steps)
+        helper.print_resume_report(step, model_path, meta_path, has_optimizer=False, target_steps=target_steps)
 
-        # Test 6: Generate resume instructions
-        print("TEST 6: Generate resume instructions")
+        # Test 6: Generate resume instructions (both with and without optimizer)
+        print("TEST 6a: Generate resume instructions (without optimizer)")
         print("-" * 80)
-        instructions = helper.generate_resume_instructions(step, meta_path)
-        print(f"✓ Generated instructions (truncated):")
-        print(instructions[:200] + "...")
+        instructions_no_opt = helper.generate_resume_instructions(step, meta_path, has_optimizer=False)
+        print(f"✓ Generated instructions without optimizer (truncated):")
+        print(instructions_no_opt[:250] + "...")
+        print()
+
+        print("TEST 6b: Generate resume instructions (with optimizer)")
+        print("-" * 80)
+        instructions_with_opt = helper.generate_resume_instructions(step, meta_path, has_optimizer=True)
+        print(f"✓ Generated instructions with optimizer (truncated):")
+        print(instructions_with_opt[:250] + "...")
         print()
 
         print("="*80)

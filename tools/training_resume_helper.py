@@ -27,7 +27,7 @@ class TrainingResumeHelper:
     def __init__(self, checkpoint_dir: str):
         self.checkpoint_dir = checkpoint_dir
 
-    def find_latest_checkpoint(self) -> Optional[Tuple[int, str, str]]:
+    def find_latest_checkpoint(self) -> Optional[Tuple[int, str, str, bool]]:
         """
         Find the most recent checkpoint in the directory.
 
@@ -37,7 +37,7 @@ class TrainingResumeHelper:
         - optim_<step>.pt (optimizer state, optional)
 
         Returns:
-            Tuple of (step, model_path, meta_path), or None if not found
+            Tuple of (step, model_path, meta_path, has_optimizer), or None if not found
         """
         # Look for model_*.pt files
         model_files = glob.glob(os.path.join(self.checkpoint_dir, "model_*.pt"))
@@ -57,7 +57,10 @@ class TrainingResumeHelper:
                 # Check if corresponding meta file exists
                 meta_path = os.path.join(self.checkpoint_dir, f"meta_{step:06d}.json")
                 if os.path.exists(meta_path):
-                    checkpoints.append((step, model_path, meta_path))
+                    # Check if optimizer file exists (optional)
+                    optim_path = os.path.join(self.checkpoint_dir, f"optim_{step:06d}.pt")
+                    has_optimizer = os.path.exists(optim_path)
+                    checkpoints.append((step, model_path, meta_path, has_optimizer))
             except (IndexError, ValueError):
                 continue
 
@@ -174,7 +177,7 @@ class TrainingResumeHelper:
             'target_steps': target_steps
         }
 
-    def print_resume_report(self, step: int, model_path: str, meta_path: str, target_steps: int = None):
+    def print_resume_report(self, step: int, model_path: str, meta_path: str, has_optimizer: bool, target_steps: int = None):
         """
         Print a report about resuming from this checkpoint.
 
@@ -182,6 +185,7 @@ class TrainingResumeHelper:
             step: Checkpoint step number
             model_path: Path to model_<step>.pt
             meta_path: Path to meta_<step>.json
+            has_optimizer: Whether optimizer file exists
             target_steps: Target total steps (optional)
         """
         print(f"\n{'='*80}")
@@ -194,6 +198,7 @@ class TrainingResumeHelper:
         print(f"Checkpoint directory: {self.checkpoint_dir}")
         print(f"Model file: {os.path.basename(model_path)}")
         print(f"Metadata file: {os.path.basename(meta_path)}")
+        print(f"Optimizer file: {'optim_' + f'{step:06d}.pt' if has_optimizer else 'N/A (not saved)'}")
         print(f"\nLast saved step: {info['step']:,}")
         if info['val_bpb']:
             print(f"Validation BPB: {info['val_bpb']:.4f}")
@@ -237,7 +242,7 @@ class TrainingResumeHelper:
 
         print(f"\n{'='*80}\n")
 
-    def generate_resume_instructions(self, step: int, meta_path: str, script: str = "base_train.py") -> str:
+    def generate_resume_instructions(self, step: int, meta_path: str, has_optimizer: bool, script: str = "base_train.py") -> str:
         """
         Generate instructions for manually resuming training.
 
@@ -247,6 +252,7 @@ class TrainingResumeHelper:
         Args:
             step: Checkpoint step number
             meta_path: Path to meta_<step>.json
+            has_optimizer: Whether optimizer file exists
             script: Training script name
 
         Returns:
@@ -256,6 +262,34 @@ class TrainingResumeHelper:
 
         checkpoint_dir = self.checkpoint_dir
 
+        # Generate conditional optimizer loading based on whether file exists
+        if has_optimizer:
+            load_optimizer_code = f"""   model_data, optim_data, meta_data = load_checkpoint(
+       checkpoint_dir="{checkpoint_dir}",
+       step={step},
+       device=device,
+       load_optimizer=True  # Optimizer checkpoint exists
+   )
+
+   # Load into your model
+   model.load_state_dict(model_data)
+
+   # Load optimizer state to continue training
+   optimizer.load_state_dict(optim_data)"""
+        else:
+            load_optimizer_code = f"""   model_data, optim_data, meta_data = load_checkpoint(
+       checkpoint_dir="{checkpoint_dir}",
+       step={step},
+       device=device,
+       load_optimizer=False  # No optimizer checkpoint saved
+   )
+
+   # Load into your model
+   model.load_state_dict(model_data)
+
+   # No optimizer state available - will start with fresh optimizer
+   # (fine for fine-tuning or transfer learning)"""
+
         instructions = f"""
 To resume training from step {step:,}:
 
@@ -263,19 +297,7 @@ To resume training from step {step:,}:
 
    from nanochat.checkpoint_manager import load_checkpoint
 
-   model_data, optim_data, meta_data = load_checkpoint(
-       checkpoint_dir="{checkpoint_dir}",
-       step={step},
-       device=device,
-       load_optimizer=True
-   )
-
-   # Load into your model
-   model.load_state_dict(model_data)
-
-   # Load optimizer state if continuing training
-   if optim_data:
-       optimizer.load_state_dict(optim_data)
+{load_optimizer_code}
 
 2. Set the starting step to continue from:
 
@@ -336,23 +358,27 @@ Examples:
         print(f"  - optim_<step>.pt  (optimizer state, optional)")
         sys.exit(1)
 
-    step, model_path, meta_path = checkpoint_result
+    step, model_path, meta_path, has_optimizer = checkpoint_result
 
     if args.verify:
         if helper.verify_checkpoint(step, model_path, meta_path):
             print("\n✅ Checkpoint is ready to use!")
+            if has_optimizer:
+                print("   (includes optimizer state)")
+            else:
+                print("   (no optimizer state - fine for fine-tuning)")
         else:
             print("\n❌ Checkpoint has issues - may not resume correctly")
             sys.exit(1)
     elif args.command:
-        instructions = helper.generate_resume_instructions(step, meta_path, args.script)
+        instructions = helper.generate_resume_instructions(step, meta_path, has_optimizer, args.script)
         print("\n" + "="*80)
         print("RESUME INSTRUCTIONS")
         print("="*80)
         print(instructions)
         print("="*80 + "\n")
     else:
-        helper.print_resume_report(step, model_path, meta_path, args.target_steps)
+        helper.print_resume_report(step, model_path, meta_path, has_optimizer, args.target_steps)
 
 
 if __name__ == "__main__":
