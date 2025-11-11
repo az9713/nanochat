@@ -848,9 +848,134 @@ Generates a color-coded heatmap showing attention weights as a matrix:
 - Debug and interpret model predictions
 - Understand rotary embeddings and QK normalization effects
 
-#### 🔜 Planned Features (See `docs/09_feature_implementation_guide.md`)
+##### 9. Learning Rate Finder (`lr_finder.py`)
+Analyze learning rate schedules and find optimal learning rates for training experiments.
 
-9. **Learning Rate Finder** - Find optimal learning rate automatically
+**What it does:**
+- Analyze existing training runs to understand LR impact on loss
+- Extract learning rate and loss data from checkpoint metadata
+- Detect LR schedule type (constant, decay, warmup, warmup_decay, custom)
+- Identify best checkpoint by lowest training loss
+- Generate recommendations for optimal learning rates
+- Plot LR schedule and loss curves over training (requires matplotlib)
+- Provide general guidance on LR range testing
+
+**Why it's useful:**
+- Find optimal learning rate before full training runs
+- Save time and compute by avoiding bad LR choices
+- Understand how LR affects training dynamics
+- Learn to identify good LR schedules
+- Debug training issues related to learning rate
+- Get data-driven recommendations for new experiments
+- Understand LR range test methodology (Leslie Smith)
+- Compare different LR schedules empirically
+
+**Usage:**
+```bash
+# Analyze existing training run
+python tools/lr_finder.py out/base_checkpoints/d20
+
+# Analyze and generate visualization plot
+python tools/lr_finder.py out/base_checkpoints/d20 --plot
+
+# Save plot to file
+python tools/lr_finder.py out/base_checkpoints/d20 --plot --output lr_analysis.png
+
+# Get recommendations only
+python tools/lr_finder.py out/base_checkpoints/d20 --recommend
+```
+
+**Example output:**
+```
+====================================================================================================
+LEARNING RATE ANALYSIS
+====================================================================================================
+
+Checkpoint directory: out/base_checkpoints/d20
+Number of checkpoints analyzed: 15
+
+Learning rate range:
+  Min LR: 0.000100
+  Max LR: 0.001000
+
+LR schedule type: warmup_decay
+
+Best checkpoint (lowest training loss):
+  Step:          5400
+  Learning rate: 0.000500
+  Train loss:    1.1642
+
+====================================================================================================
+
+====================================================================================================
+LEARNING RATE RECOMMENDATIONS
+====================================================================================================
+
+Based on your training run analysis:
+
+1. Best observed learning rate: 0.000500
+   This LR achieved the lowest training loss in your run.
+
+2. Detected schedule: warmup_decay
+   Excellent! This is a recommended schedule pattern.
+   Your current schedule looks good.
+
+3. For new experiments, try:
+   - Conservative: 0.000250 (50% of best)
+   - Recommended: 0.000500 (observed best)
+   - Aggressive:  0.001000 (2x best)
+
+----------------------------------------------------------------------------------------------------
+GENERAL RECOMMENDATIONS
+----------------------------------------------------------------------------------------------------
+
+📖 How to find optimal learning rate:
+
+1. LR Range Test (Leslie Smith method):
+   - Start with very small LR (e.g., 1e-8)
+   - Increase exponentially each step to large LR (e.g., 10)
+   - Run for 100-1000 steps
+   - Plot loss vs LR
+   - Choose LR where loss decreases most steeply
+
+2. Rules of thumb:
+   - Too low: Loss decreases very slowly
+   - Too high: Loss diverges or oscillates
+   - Just right: Steady, fast decrease
+
+3. Common starting points:
+   - Adam/AdamW: 3e-4 to 1e-3
+   - SGD: 1e-2 to 1e-1
+   - For fine-tuning: 1e-5 to 1e-4
+
+====================================================================================================
+```
+
+**Plot output:**
+Generates a figure with two subplots:
+1. Learning rate schedule over training steps
+2. Training loss over training steps
+
+Both plots mark the best checkpoint with a vertical line/marker for easy identification.
+
+**Dependencies:**
+- Python standard library only (core functionality)
+- matplotlib (optional, for plotting - gracefully falls back if unavailable)
+
+**Learning outcomes:**
+- Understand the importance of learning rate in training
+- Learn about different LR schedules (constant, decay, warmup, warmup_decay)
+- Practice analyzing training dynamics
+- Understand LR range test methodology
+- Learn to identify optimal learning rates from data
+- Understand the relationship between LR and loss
+- Practice reading and analyzing checkpoint metadata
+- Learn rules of thumb for different optimizers
+- Understand trade-offs between conservative and aggressive LRs
+
+#### 🔜 Planned Features
+
+All 10 features implemented! 🎉
 
 ## Design Principles
 
@@ -898,7 +1023,7 @@ The original nanochat is minimalist and production-focused. This fork adds a com
 ## Status
 
 - ✅ Documentation: Complete (9 guides covering all aspects)
-- ✅ Tools: 8/10 features implemented
+- ✅ Tools: 10/10 features implemented 🎉
   - Feature 1: Interactive Tokenizer Playground ✅
   - Feature 2: Training Progress Dashboard ✅
   - Feature 3: Checkpoint Browser & Comparator ✅
@@ -907,8 +1032,9 @@ The original nanochat is minimalist and production-focused. This fork adds a com
   - Feature 6: Generation Parameter Explorer ✅
   - Feature 7: Training Resume Helper ✅
   - Feature 8: Simple Attention Visualizer ✅
+  - Feature 9: Learning Rate Finder ✅
   - Feature 10: Conversation Template Builder ✅
-- 🔄 Actively adding more learning features
+- 🎓 Complete feature set for learning LLMs and PyTorch!
 
 ## Acknowledgments
 
