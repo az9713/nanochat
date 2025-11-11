@@ -752,9 +752,104 @@ Tokenized Format:
 - Prepare high-quality training data for SFT phase
 - Debug tokenization and formatting issues before training
 
+##### 8. Simple Attention Visualizer (`attention_visualizer.py`)
+Visualize attention patterns in trained models to understand the Transformer attention mechanism.
+
+**What it does:**
+- Load trained nanochat models from checkpoints
+- Compute attention weights for any transformer layer
+- Visualize attention for specific heads or averaged across all heads
+- Show text-based visualization with top-k attended tokens
+- Generate heatmap visualizations of attention matrices (requires matplotlib)
+- Display which tokens the model "looks at" during inference
+- Support for both base and SFT models
+
+**Why it's useful:**
+- Understand the Transformer attention mechanism concretely
+- See what tokens the model focuses on for predictions
+- Debug model behavior and understand reasoning
+- Learn how different layers capture different patterns
+- Compare attention across different heads
+- Visualize information flow through the model
+- Educational tool for understanding self-attention
+- Verify model is learning meaningful relationships
+
+**Usage:**
+```bash
+# Text-based visualization for layer 0
+python tools/attention_visualizer.py --text "Hello world" --layer 0
+
+# Visualize specific head in layer 5
+python tools/attention_visualizer.py --text "The capital of France is" --layer 5 --head 3
+
+# Generate heatmap and save to file
+python tools/attention_visualizer.py --text "Once upon a time" --layer 10 --heatmap --output attention.png
+
+# Use specific model checkpoint
+python tools/attention_visualizer.py --source base --model-tag d20 --text "Hello" --layer 0
+
+# Show more attended tokens in text mode
+python tools/attention_visualizer.py --text "The quick brown fox" --layer 0 --top-k 10
+```
+
+**Example output (text mode):**
+```
+====================================================================================================
+ATTENTION VISUALIZATION (Text-based)
+====================================================================================================
+
+Input text: "Hello world"
+Layer: 0
+Head: Average across all 6 heads
+
+Showing top-5 attended tokens for each position:
+----------------------------------------------------------------------------------------------------
+
+Token 0: '<|bos|>'
+  Attends to:
+    1. Token 0: '<|bos|>'          [100.0%] ████████████████████████████████████████
+
+Token 1: 'Hello'
+  Attends to:
+    1. Token 1: 'Hello'            [ 65.3%] ██████████████████████████
+    2. Token 0: '<|bos|>'          [ 34.7%] █████████████
+
+Token 2: ' world'
+  Attends to:
+    1. Token 2: ' world'           [ 48.2%] ███████████████████
+    2. Token 1: 'Hello'            [ 31.5%] ████████████
+    3. Token 0: '<|bos|>'          [ 20.3%] ████████
+
+====================================================================================================
+```
+
+**Heatmap output:**
+Generates a color-coded heatmap showing attention weights as a matrix:
+- Rows: Attending tokens (queries)
+- Columns: Attended tokens (keys)
+- Color intensity: Attention weight (0-1)
+- Includes token labels on both axes
+- Professional formatting with colorbar and grid
+
+**Dependencies:**
+- Python standard library (core functionality)
+- PyTorch (required - for model loading and inference)
+- matplotlib (optional, for heatmap visualization - gracefully falls back if unavailable)
+
+**Learning outcomes:**
+- Understand Transformer self-attention mechanism visually
+- See how queries attend to keys in the attention computation
+- Learn about attention heads and their different roles
+- Understand causal masking (no attention to future tokens)
+- Practice working with attention weight matrices
+- Learn how attention patterns change across layers
+- Understand multi-head attention averaging
+- See concrete examples of what the model "pays attention to"
+- Debug and interpret model predictions
+- Understand rotary embeddings and QK normalization effects
+
 #### 🔜 Planned Features (See `docs/09_feature_implementation_guide.md`)
 
-8. **Simple Attention Visualizer** - See what the model attends to
 9. **Learning Rate Finder** - Find optimal learning rate automatically
 
 ## Design Principles
@@ -803,7 +898,7 @@ The original nanochat is minimalist and production-focused. This fork adds a com
 ## Status
 
 - ✅ Documentation: Complete (9 guides covering all aspects)
-- ✅ Tools: 7/10 features implemented
+- ✅ Tools: 8/10 features implemented
   - Feature 1: Interactive Tokenizer Playground ✅
   - Feature 2: Training Progress Dashboard ✅
   - Feature 3: Checkpoint Browser & Comparator ✅
@@ -811,6 +906,7 @@ The original nanochat is minimalist and production-focused. This fork adds a com
   - Feature 5: Model Size & Cost Calculator ✅
   - Feature 6: Generation Parameter Explorer ✅
   - Feature 7: Training Resume Helper ✅
+  - Feature 8: Simple Attention Visualizer ✅
   - Feature 10: Conversation Template Builder ✅
 - 🔄 Actively adding more learning features
 

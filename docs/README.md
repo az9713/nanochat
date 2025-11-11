@@ -140,6 +140,14 @@ The `tools/` directory contains ready-to-use utilities for learning and experime
   - Interactive mode for building conversations step-by-step
   - Perfect for preparing fine-tuning data and understanding conversation format
 
+- **attention_visualizer.py** - Visualize attention patterns in trained models
+  - Load models and compute attention weights for any layer
+  - Show text-based visualization with top-k attended tokens
+  - Generate heatmap visualizations of attention matrices
+  - Compare attention across different heads or average all heads
+  - Understand what tokens the model "looks at" during inference
+  - Perfect for understanding Transformer attention mechanism
+
 More tools coming soon! See the [Feature Implementation Guide](09_feature_implementation_guide.md) for features you can build.
 
 ## 🎯 How to Use This Documentation
@@ -208,6 +216,7 @@ nanochat/
     ├── model_calculator.py              # Model size & cost calculator
     ├── generation_explorer.py           # Generation parameter exploration
     ├── training_resume_helper.py        # Training checkpoint analysis and resume
+    ├── attention_visualizer.py          # Visualize attention patterns in models
     └── conversation_template_builder.py # Create and validate conversation templates
 ```
 
