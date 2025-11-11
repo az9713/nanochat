@@ -148,7 +148,15 @@ The `tools/` directory contains ready-to-use utilities for learning and experime
   - Understand what tokens the model "looks at" during inference
   - Perfect for understanding Transformer attention mechanism
 
-More tools coming soon! See the [Feature Implementation Guide](09_feature_implementation_guide.md) for features you can build.
+- **lr_finder.py** - Find optimal learning rates for training
+  - Analyze existing training runs to understand LR impact on loss
+  - Detect LR schedule type (constant, decay, warmup, warmup_decay)
+  - Generate recommendations for optimal learning rates
+  - Plot LR schedule and loss curves over training
+  - Provide guidance on LR range testing methodology
+  - Perfect for finding the best LR before full training runs
+
+**All 10 learning tools implemented!** 🎉 See the [Feature Implementation Guide](09_feature_implementation_guide.md) for detailed documentation.
 
 ## 🎯 How to Use This Documentation
 
@@ -217,6 +225,7 @@ nanochat/
     ├── generation_explorer.py           # Generation parameter exploration
     ├── training_resume_helper.py        # Training checkpoint analysis and resume
     ├── attention_visualizer.py          # Visualize attention patterns in models
+    ├── lr_finder.py                     # Find optimal learning rates
     └── conversation_template_builder.py # Create and validate conversation templates
 ```
 
