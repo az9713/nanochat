@@ -733,6 +733,142 @@ def validate_conversation(self, conversation):
   - Enhanced Bug Type #4: Added pattern consistency checks
   - All enhancements based on real bugs found by OpenAI Codex Code Review during Feature 10 implementation
 
+- v1.1 (2025-11-11): Added real-world bug examples from nanochat development
+  - **Bug Example 1 (P0)**: Attention visualizer AttributeError
+  - **Bug Example 2 (P1)**: Test assertions not propagating
+
+## Real-World Bugs Caught
+
+This section documents actual bugs found during nanochat feature development, demonstrating the practical value of the verification checklist.
+
+### Bug #1: Attention Visualizer - Non-existent Method Call (P0)
+
+**Location:** `tools/attention_visualizer.py`, line ~104
+**Severity:** P0 - Critical (Complete feature failure)
+**Bug Type:** #5 System-Level Integration Bugs
+**Discovered by:** OpenAI Codex Code Review
+**Status:** Fixed (commit 45ab921)
+
+**Buggy Code:**
+```python
+def compute_attention_weights(self, input_text: str):
+    # ...
+    # BUG: get_cos_sin() method doesn't exist on GPT model
+    cos_sin = self.model.get_cos_sin(T)
+```
+
+**Problem:**
+- Code called `self.model.get_cos_sin(T)` which doesn't exist in the GPT model
+- Should have accessed cached rotary embedding buffers directly: `model.cos` and `model.sin`
+- Caused AttributeError crash immediately when tool was used
+- Feature was completely non-functional
+
+**Impact:**
+- Attention visualizer completely broken
+- Users would see AttributeError: 'GPT' object has no attribute 'get_cos_sin'
+- Zero functionality - tool unusable
+
+**Root Cause:**
+- Incorrect API assumption (Bug Type #5)
+- No verification of GPT model's public API
+- Assumed method existed without checking documentation or code
+
+**Fixed Code:**
+```python
+def compute_attention_weights(self, input_text: str):
+    # ...
+    # FIXED: Access rotary embedding buffers directly
+    cos = self.model.cos[:, :T, :, :]  # Shape: [1, seq_len, 1, head_dim//2]
+    sin = self.model.sin[:, :T, :, :]  # Shape: [1, seq_len, 1, head_dim//2]
+    cos_sin = (cos, sin)
+```
+
+**Lessons Learned:**
+1. Always verify external API contracts before use (Bug Type #5 checklist)
+2. Check what methods/attributes are actually available on objects
+3. Read source code when API is unclear
+4. Test integration points immediately after writing
+
+**Checklist Items That Would Have Caught This:**
+- ✓ Bug Type #5: "Function signature correct?" - Would have checked GPT API
+- ✓ Bug Type #5: "Return values checked" - Would have verified available methods
+- ✓ Bug Type #1: "Test each feature independently" - Would have run tool and seen crash
+
+---
+
+### Bug #2: Test Assertions Not Propagating (P1)
+
+**Location:** `tools/test_lr_finder.py`, all 10 test functions
+**Severity:** P1 - High (Test suite unable to catch regressions)
+**Bug Type:** #2 Logical Bugs + #8 Guard Logic Bugs
+**Discovered by:** OpenAI Codex Code Review
+**Status:** Fixed (commit bc52937)
+
+**Buggy Pattern:**
+```python
+def test_checkpoint_discovery():
+    """Test checkpoint discovery functionality."""
+    try:
+        # ... test code ...
+        assert len(checkpoints) == 5, "Expected 5 checkpoints"
+        return True
+    except Exception as e:  # ← BUG: Catches AssertionError!
+        print(f"✗ Test failed: {e}")
+        return False  # ← pytest never sees the failure!
+```
+
+**Problem:**
+- All 10 test functions wrapped assertions in `try/except` blocks
+- When assertion failed, exception was caught and test returned `False`
+- pytest expects exceptions to propagate, not return values
+- Test suite reported success even when assertions failed
+- Test suite unable to catch regressions in LRFinder
+
+**Impact:**
+- CI/CD broken - failing tests reported as passing
+- No protection against regressions
+- False confidence in code quality
+- Could ship broken code to production
+
+**Root Cause:**
+- Misunderstood how pytest detects test failures (Bug Type #2 - Logical)
+- Incorrect guard logic pattern (Bug Type #8 - Guard Logic)
+- Swallowed exceptions that should propagate
+
+**Fixed Pattern:**
+```python
+def test_checkpoint_discovery():
+    """Test checkpoint discovery functionality."""
+    # No try/except - let assertions propagate naturally
+    # ... test code ...
+    assert len(checkpoints) == 5, "Expected 5 checkpoints"
+    # pytest will catch AssertionError automatically
+```
+
+**Lessons Learned:**
+1. Understand test framework conventions (pytest detects via exceptions)
+2. Don't swallow exceptions that should propagate
+3. Guard logic must be correct (Bug Type #8)
+4. Test the tests - verify they can actually fail
+
+**Checklist Items That Would Have Caught This:**
+- ✓ Bug Type #2: "Trace all conditional branches" - Would have seen try/except catches all
+- ✓ Bug Type #8: "Write out TRUE/FALSE branches" - Would have seen FALSE branch swallows errors
+- ✓ Bug Type #8: "Anti-pattern 1: Validation only in happy path" - This is that anti-pattern!
+
+**How to Verify Fix:**
+```python
+# Create a test that should fail:
+def test_should_fail():
+    assert False, "This should cause test failure"
+
+# Run it:
+# - Before fix: Reports success (wrong!)
+# - After fix: Reports failure (correct!)
+```
+
+---
+
 ## Acknowledgments
 
 - **BrowserStack** - For the foundational 7 bug types framework

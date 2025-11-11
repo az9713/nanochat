@@ -123,18 +123,85 @@ I haven't invested too much here but some tests exist, especially for the tokeni
 python -m pytest tests/test_rustbpe.py -v -s
 ```
 
+## Learning Resources (Educational Fork)
+
+This fork includes extensive educational additions designed for beginners:
+
+### 📚 Complete Documentation (`docs/`)
+
+Nine comprehensive guides teaching LLMs from scratch:
+- **01_introduction.md** - LLMs and PyTorch basics
+- **02_tokenization.md** - BPE algorithm explained
+- **03_architecture.md** - Transformer architecture deep-dive
+- **04_training.md** - Training pipeline and distributed training
+- **05_inference.md** - Text generation and sampling strategies
+- **06_tools.md** - Tool use capabilities (calculator, code execution)
+- **07_evaluation.md** - Benchmarks and metrics
+- **08_quickstart.md** - Installation and first steps
+- **09_feature_implementation_guide.md** - 10 hands-on features to build
+
+### 🛠️ Learning Tools (`tools/`)
+
+Ten practical tools for understanding model behavior (10/10 Complete):
+
+1. **tokenizer_playground.py** - Interactive tokenization visualization
+2. **training_dashboard.py** - Training progress monitoring with metrics
+3. **dataset_inspector.py** - Dataset validation and analysis
+4. **model_calculator.py** - Model size and cost estimation
+5. **checkpoint_browser.py** - Checkpoint browsing and comparison
+6. **generation_explorer.py** - Generation parameter experimentation
+7. **training_resume_helper.py** - Training recovery assistance
+8. **conversation_template_builder.py** - SFT data preparation
+9. **attention_visualizer.py** - Attention pattern visualization
+10. **lr_finder.py** - Learning rate schedule optimization
+
+See [FEATURES.md](FEATURES.md) for detailed usage examples and [docs/README.md](docs/README.md) for comprehensive documentation.
+
+### 📋 Quality Assurance
+
+- **bug_verification_checklist.md** - 8-type bug verification framework
+- Comprehensive test suites for all tools (64 test cases)
+- Real-world bug examples with lessons learned
+- Zero documentation debt policy
+
 ## File structure
 
 ```
 .
 ├── LICENSE
 ├── README.md
+├── FEATURES.md                     # Educational fork additions
 ├── dev
 │   ├── gen_synthetic_data.py       # Example synthetic data for identity
 │   ├── generate_logo.html
 │   ├── nanochat.png
 │   ├── repackage_data_reference.py # Pretraining data shard generation
 │   └── runcpu.sh                   # Small example of how to run on CPU/MPS
+├── docs                            # ← NEW: Educational documentation
+│   ├── README.md                   # Documentation entry point
+│   ├── 01_introduction.md          # LLMs & PyTorch intro
+│   ├── 02_tokenization.md          # Tokenization explained
+│   ├── 03_architecture.md          # Transformer architecture
+│   ├── 04_training.md              # Training pipeline
+│   ├── 05_inference.md             # Text generation
+│   ├── 06_tools.md                 # Tool capabilities
+│   ├── 07_evaluation.md            # Evaluation & benchmarks
+│   ├── 08_quickstart.md            # Quick start guide
+│   ├── 09_feature_implementation_guide.md        # Features 1-5
+│   ├── 09_feature_implementation_guide_part2.md  # Features 6-10
+│   └── bug_verification_checklist.md  # Quality assurance
+├── tools                           # ← NEW: Learning tools (10 tools)
+│   ├── tokenizer_playground.py     # Interactive tokenization
+│   ├── training_dashboard.py       # Training monitoring
+│   ├── dataset_inspector.py        # Dataset analysis
+│   ├── model_calculator.py         # Model size calculator
+│   ├── checkpoint_browser.py       # Checkpoint browser
+│   ├── generation_explorer.py      # Generation testing
+│   ├── training_resume_helper.py   # Training recovery
+│   ├── conversation_template_builder.py  # Data prep
+│   ├── attention_visualizer.py     # Attention viz
+│   ├── lr_finder.py                # LR optimization
+│   └── test_*.py                   # Test suites (8 files)
 ├── nanochat
 │   ├── __init__.py                 # empty
 │   ├── adamw.py                    # Distributed AdamW optimizer
