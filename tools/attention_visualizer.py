@@ -98,7 +98,11 @@ class AttentionVisualizer:
 
             # Get rotary embeddings for current sequence length
             T = x.size(1)
-            cos_sin = self.model.get_cos_sin(T)
+            # Access rotary embedding buffers directly (model.cos, model.sin)
+            # Shape: [1, seq_len, 1, head_dim//2]
+            cos = self.model.cos[:, :T, :, :]
+            sin = self.model.sin[:, :T, :, :]
+            cos_sin = (cos, sin)
 
             # Forward through layers up to and including target layer
             for i in range(layer_idx + 1):
